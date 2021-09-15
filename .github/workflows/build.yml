@@ -35,63 +35,75 @@ jobs:
         conda install mamba -c conda-forge --yes
 
     - name: create environment
+      shell: bash -l {0}
       run: |
         mamba env create -f environment.yml
-        conda init
         conda info
         conda list
         conda env list
 
     - name: Update pip, wheel, and setuptools
+      shell: bash -l {0}
       run: |
         conda activate ecomp_experiment
         python -m pip install --upgrade pip wheel setuptools
 
     - name: finish setup
+      shell: bash -l {0}
       run: |
         conda activate ecomp_experiment
         pre-commit install
 
     - uses: actions/checkout@v2
     - name: Build sdist
+      shell: bash -l {0}
       run:  |
         conda activate ecomp_experiment
         python setup.py sdist
     - name: Install sdist
+      shell: bash -l {0}
       run:  |
         conda activate ecomp_experiment
         pip install ./dist/ecomp_experiment-*
     - name: Clean up working directory
+      shell: bash -l {0}
       run:  |
         conda activate ecomp_experiment
         rm -rf ./*
     - name: Try importing ecomp_experiment
+      shell: bash -l {0}
       run:  |
         conda activate ecomp_experiment
         python -c 'import ecomp_experiment; print(ecomp_experiment.__version__)'
     - name: Remove sdist install
+      shell: bash -l {0}
       run:  |
         conda activate ecomp_experiment
         pip uninstall -y ecomp_experiment
 
     - uses: actions/checkout@v2
     - name: Build wheel
+      shell: bash -l {0}
       run:  |
         conda activate ecomp_experiment
         python setup.py bdist_wheel
     - name: Install wheel
+      shell: bash -l {0}
       run:  |
         conda activate ecomp_experiment
         pip install ./dist/ecomp_experiment-*.whl
     - name: Clean up working directory
+      shell: bash -l {0}
       run:  |
         conda activate ecomp_experiment
         rm -rf ./*
     - name: Try importing ecomp_experiment
+      shell: bash -l {0}
       run:  |
         conda activate ecomp_experiment
         python -c 'import ecomp_experiment; print(ecomp_experiment.__version__)'
     - name: Remove wheel install
+      shell: bash -l {0}
       run:  |
         conda activate ecomp_experiment
         pip uninstall -y ecomp_experiment

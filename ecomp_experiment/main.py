@@ -1,17 +1,11 @@
 """Try this."""
 
 # %%
-import psychopy
-from psychopy.visual import window
+from psychopy.visual import Window
 
 # %%
-1 + 1
+win = Window()
 
 # %%
-psychopy.visual
-# %%
-
-
-# %%
-dir(window)
+win.close()
 # %%
