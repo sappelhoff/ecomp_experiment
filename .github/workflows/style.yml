@@ -36,9 +36,10 @@ jobs:
     - name: create environment
       run: |
         mamba env create -f environment.yml
-        conda activate ecomp_experiment
+        conda init
         conda info
         conda list
+        conda env list
 
     - name: Update pip, wheel, and setuptools
       run: |
