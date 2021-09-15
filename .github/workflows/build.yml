@@ -44,6 +44,8 @@ jobs:
     - name: finish setup
       shell: bash -l {0}
       run: |
+        conda info
+        conda list
         pre-commit install
 
     - uses: actions/checkout@v2
