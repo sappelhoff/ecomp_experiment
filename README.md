@@ -1,5 +1,4 @@
 [![Python build](https://github.com/sappelhoff/ecomp_experiment/actions/workflows/build.yml/badge.svg)](https://github.com/sappelhoff/ecomp_experiment/actions/workflows/build.yml)
-
 [![Python style](https://github.com/sappelhoff/ecomp_experiment/actions/workflows/style.yml/badge.svg)](https://github.com/sappelhoff/ecomp_experiment/actions/workflows/style.yml)
 
 # eComp Experiment
