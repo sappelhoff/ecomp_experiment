@@ -5,6 +5,8 @@ channels:
 dependencies:
 - python=3.8
 - pip
+- ipython
+- ipykernel
 - psychopy
 - numpy
 - pre-commit
