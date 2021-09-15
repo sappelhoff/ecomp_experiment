@@ -1,0 +1,24 @@
+name: ecomp_experiment
+channels:
+- defaults
+- conda-forge
+dependencies:
+- python=3.8
+- pip
+- psychopy
+- numpy
+- pre-commit
+- black
+- isort
+- flake8
+- flake8-docstrings
+- pytest-cov
+- pytest-sugar
+- pytest
+- pip:
+  - psychtoolbox
+  - pygame
+  - pyo
+  - pyparallel; platform_system != "Windows"
+  - SoundFile; platform_system == "Windows"
+  - websocket_client
