@@ -26,18 +26,16 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }}
       uses: conda-incubator/setup-miniconda@v2
       with:
-        auto-update-conda: true
         python-version: ${{ matrix.python-version }}
+        mamba-version: "*"
+        channels: defaults, conda-forge
+        channel-priority: true
+        activate-environment: ecomp_experiment
+        environment-file: environment.yml
 
-    - name: install mamba
+    - name: check environment
       shell: bash -l {0}
       run: |
-        conda install mamba -c conda-forge --yes
-
-    - name: create environment
-      shell: bash -l {0}
-      run: |
-        mamba env create -f environment.yml
         conda info
         conda list
         conda env list
@@ -45,17 +43,14 @@ jobs:
     - name: Update pip, wheel, and setuptools
       shell: bash -l {0}
       run: |
-        conda activate ecomp_experiment
         python -m pip install --upgrade pip wheel setuptools
 
     - name: finish setup
       shell: bash -l {0}
       run: |
-        conda activate ecomp_experiment
         pre-commit install
 
     - name: Check formatting
       shell: bash -l {0}
       run: |
-        conda activate ecomp_experiment
         pre-commit run --all-files || ( git status --short ; git diff ; exit 1 )
