@@ -13,6 +13,7 @@ This Python package implements the eComp experiment.
 
 ```shell
 mamba env create -f environment.yml
+conda activate ecomp_experiment
 pre-commit install
 pip install -e .
 ```
