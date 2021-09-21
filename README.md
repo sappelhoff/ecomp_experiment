@@ -1,7 +1,7 @@
 [![Python build](https://github.com/sappelhoff/ecomp_experiment/actions/workflows/build.yml/badge.svg)](https://github.com/sappelhoff/ecomp_experiment/actions/workflows/build.yml)
 [![Python style](https://github.com/sappelhoff/ecomp_experiment/actions/workflows/style.yml/badge.svg)](https://github.com/sappelhoff/ecomp_experiment/actions/workflows/style.yml)
 [![Python test](https://github.com/sappelhoff/ecomp_experiment/actions/workflows/test.yml/badge.svg)](https://github.com/sappelhoff/ecomp_experiment/actions/workflows/test.yml)
-[![Test coverage](https://codecov.io/gh/sappelhoff/ecomp_experiment/branch/master/graph/badge.svg)](https://codecov.io/gh/sappelhoff/ecomp_experiment)
+[![codecov](https://codecov.io/gh/sappelhoff/ecomp_experiment/branch/main/graph/badge.svg?token=TC2BCYGJAJ)](https://codecov.io/gh/sappelhoff/ecomp_experiment)
 
 # eComp Experiment
 
