@@ -26,9 +26,11 @@ def get_ttl_dict():
     ttl_dict["single_new_trl"] = bytes([3])
 
     # Generate the triggers for the "dual" task
+    dict_to_add = {}
     for key, val in ttl_dict.items():
         new_key = key.replace("single_", "dual_")
         new_val = ord(val) + DUAL_STREAM_CONST
-        ttl_dict[new_key] = bytes([new_val])
+        dict_to_add[new_key] = bytes([new_val])
+    ttl_dict.update(dict_to_add)
 
     return ttl_dict

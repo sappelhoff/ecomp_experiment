@@ -18,7 +18,7 @@ def test_get_ttl_dict():
 
             assert isinstance(val, bytes)
             assert isinstance(ttl_dict[new_key], bytes)
-            assert ord(ttl_dict[new_key]) + DUAL_STREAM_CONST == ord(val)
+            assert ord(ttl_dict[new_key]) - DUAL_STREAM_CONST == ord(val)
 
     # Trigger values should be unique
     trigger_values = list(ttl_dict.values())
