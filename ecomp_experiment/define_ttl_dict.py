@@ -11,7 +11,7 @@ However all TTL trigger codes for the "dual" task will be incremented by a const
 DUAL_STREAM_CONST = 100
 
 
-def provide_ttl_dict():
+def get_ttl_dict():
     """Provide a dictionnary mapping str names to byte values."""
     ttl_dict = {}
 
