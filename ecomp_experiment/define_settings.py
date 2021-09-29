@@ -1,3 +1,3 @@
 """Provide constants for several settings in the experiment."""
 
-EXPECTED_FPS = 60
+EXPECTED_FPS = 144

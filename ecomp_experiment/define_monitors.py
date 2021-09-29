@@ -23,7 +23,7 @@ if __name__ == "__main__":
     my_monitor.saveMon()
 
     # BENQ EX2780Q monitor (personal desktop)
-    my_monitor = monitors.Monitor(name="latitude7490")
+    my_monitor = monitors.Monitor(name="benq")
     my_monitor.setSizePix((2560, 1440))
     my_monitor.setWidth(59.5)
     my_monitor.setDistance(50)
