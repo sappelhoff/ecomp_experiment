@@ -57,7 +57,7 @@ jobs:
         pytest ecomp_experiment/ --cov=ecomp_experiment/ --cov-report=xml --cov-config=setup.cfg --verbose -s
 
     - name: Upload coverage report
-      if: "matrix.platform == 'ubuntu-latest'"
+      if: "matrix.os == 'ubuntu-latest'"
       uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
