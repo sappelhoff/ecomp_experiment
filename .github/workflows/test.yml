@@ -49,6 +49,7 @@ jobs:
       shell: bash -l {0}
       run: |
         pre-commit install
+        pip install -e .
 
     - name: Run pytest and upload coverage
       shell: bash -l {0}
