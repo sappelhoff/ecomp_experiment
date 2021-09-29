@@ -4,6 +4,28 @@ import numpy as np
 from psychopy import visual
 
 
+def get_choice_stim(win, stream, height=1):
+    """Get the stimulus used for inquiring participant choice.
+
+    Parameters
+    ----------
+    win : psychopy.visual.Window
+        The psychopy window on which to draw the stimuli.
+    stream : {"single", "dual"}
+        Whether the single or dual stream choice stim should be prepared.
+    height : int | float
+        height of the stimuli in degrees visual angle.
+
+    Returns
+    -------
+    choice_stim : dict
+        Contains keys 1 to 9 and negative 1 to negative 9. Corresponding
+        to digits in color1 and color2, respectively.
+
+    """
+    pass
+
+
 def get_digit_stims(win, color1=(1, 0, 0), color2=(0, 0, 1), height=1):
     """Pre-generate all digit stimuli.
 

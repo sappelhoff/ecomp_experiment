@@ -13,7 +13,7 @@ from ecomp_experiment.utils import check_framerate
 # %%
 
 
-trials = gen_trials(5)
+trials = gen_trials(2)
 
 my_monitor = monitors.Monitor(name="benq")
 width, height = my_monitor.getSizePix()
@@ -31,18 +31,59 @@ win = visual.Window(
 fps = check_framerate(win, EXPECTED_FPS)
 
 
-def display_trial(win, trial, digit_frames, blank_frames, digit_stims):
+def display_iti(win, min_ms, max_ms, fps, rng):
+    """Display and return an inter-trial-interval.
+
+    Parameters
+    ----------
+    win : psychopy.visual.Window
+        The psychopy window on which to draw the stimuli.
+    min_ms, max_ms :  int
+        The minimum and maximum inter-trial-interval time in milliseconds.
+    fps : int
+        Refreshrate of the screen.
+    rng : np.random.Generator
+        The random number generator object based on which to
+        generate the inter-trial-intervals.
+
+    Returns
+    -------
+    iti_ms : int
+        the inter-trial-interval in milliseconds.
+
+    """
+    low = int(np.floor(min_ms / 1000 * fps))
+    high = int(np.ceil(max_ms / 1000 * fps))
+    iti_frames = rng.integers(low, high + 1)
+
+    for frame in range(iti_frames):
+        win.flip()
+
+    iti_ms = (iti_frames / fps) * 1000
+    return iti_ms
+
+
+def display_trial(win, trial, digit_frames, fade_frames, digit_stims):
     """Display a trial on a window."""
     for digit in trial:
 
+        stim = digit_stims[digit]
+
         # Draw digit
-        digit_stims[digit].draw()
         for frame in range(digit_frames):
+            stim.draw()
             win.flip()
 
-        # Blank screen before next digit
-        for frame in range(blank_frames):
+        # Fade stim to blank within fade_frames
+        orig_opacity = stim.opacity
+        opacities = np.linspace(1, 0, fade_frames)
+        for opacity in opacities:
+            stim.setOpacity(opacity)
+            stim.draw()
             win.flip()
+
+        # Reset stim opacity
+        stim.setOpacity(orig_opacity)
 
 
 # get digits
@@ -52,12 +93,38 @@ digit_stims = get_digit_stims(win, height=5)
 outer, inner, horz, vert = get_fixation_stim(win)
 fixation_stim_parts = [outer, horz, vert, inner]
 
-
-trial = trials[2, ...]
+iti_rng = np.random.default_rng()
 for trial in trials:
-    display_trial(win, trial, int(fps / 3), int(fps / 12), digit_stims)
-    for frame in range(fps):
+
+    # Show fixstim
+    for stim in fixation_stim_parts:
+        stim.setAutoDraw(True)
+
+    # jittered inter-trial-interval
+    iti_ms = display_iti(win, 500, 1000, fps, iti_rng)
+
+    # 500ms before first sample onset,remove fixstim
+    for stim in fixation_stim_parts:
+        stim.setAutoDraw(False)
+    for frame in range(int(np.ceil(fps / 2))):
         win.flip()
+
+    # show samples
+    display_trial(
+        win,
+        trial,
+        digit_frames=int(fps / 2.75),
+        fade_frames=int(fps / 1),
+        digit_stims=digit_stims,
+    )
+
+    # wait briefly after offset of last sample
+    for frame in range(int(fps / 2.75) + int(fps / 12)):
+        win.flip()
+
+    # get choice from participant
+
+    # display participant choice
 
     print(np.abs(trial).mean())
 
