@@ -4,8 +4,8 @@ import numpy as np
 from psychopy import visual
 
 
-def get_choice_stim(win, stream, height=1):
-    """Get the stimulus used for inquiring participant choice.
+def get_choice_stims(win, stream, participant_id, height=1):
+    """Get the stimuli used for inquiring participant choice.
 
     Parameters
     ----------
@@ -13,17 +13,74 @@ def get_choice_stim(win, stream, height=1):
         The psychopy window on which to draw the stimuli.
     stream : {"single", "dual"}
         Whether the single or dual stream choice stim should be prepared.
+    participant_id : int
+        The participant ID, used for counterbalancing on which side (left/right)
+        which answer option is displayed (using even versus odd IDs to distinguish).
     height : int | float
-        height of the stimuli in degrees visual angle.
+        The height of the stimuli in degrees visual angle.
 
     Returns
     -------
-    choice_stim : dict
-        Contains keys 1 to 9 and negative 1 to negative 9. Corresponding
-        to digits in color1 and color2, respectively.
+    choice_stims : list of psychopy.visual.text.TextStim
+        Stimuli to be displayed during choice phase of a trial.
 
     """
-    pass
+    # Common arguments to all choice stimuli
+    kwargs = dict(
+        win=win,
+        height=height,
+        units="deg",
+        font="Liberation Sans",
+        anchorVert="center",
+    )
+
+    if stream == "single":
+        left_text = ["↑a", "↓a"][int(participant_id % 2 == 0)]
+        right_text = ["↓a", "↑a"][int(participant_id % 2 == 0)]
+        center_text = "5"
+        assert left_text != right_text
+        left_color = (0, 0, 0)
+        right_color = (0, 0, 0)
+
+    else:
+        assert stream == "dual"
+        left_color = [(1, 0, 0), (0, 0, 1)][int(participant_id % 2 == 0)]
+        right_color = [(0, 0, 1), (1, 0, 0)][int(participant_id % 2 == 0)]
+        assert left_color != right_color
+        left_text = "↑a"
+        right_text = "↑a"
+        center_text = "or"
+
+    # Design one for left, one for center, and one for right
+    left = visual.TextStim(
+        **kwargs,
+        text=left_text,
+        pos=(-0.1, 0),
+        alignText="left",
+        anchorHoriz="left",
+        color=left_color,
+    )
+
+    center = visual.TextStim(
+        **kwargs,
+        text=center_text,
+        pos=(0, 0),
+        alignText="left",
+        anchorHoriz="left",
+        color=(1, 1, 1),
+    )
+
+    right = visual.TextStim(
+        **kwargs,
+        text=right_text,
+        pos=(0.1, 0),
+        alignText="right",
+        anchorHoriz="right",
+        color=right_color,
+    )
+
+    choice_stims = [left, center, right]
+    return choice_stims
 
 
 def get_digit_stims(win, color1=(1, 0, 0), color2=(0, 0, 1), height=1):
@@ -42,7 +99,7 @@ def get_digit_stims(win, color1=(1, 0, 0), color2=(0, 0, 1), height=1):
 
     Returns
     -------
-    digit_stims : dict
+    digit_stims : dict of psychopy.visual.text.TextStim
         Contains keys 1 to 9 and negative 1 to negative 9. Corresponding
         to digits in color1 and color2, respectively.
 
@@ -83,7 +140,7 @@ def get_fixation_stim(win, back_color=(0, 0, 0), stim_color=(1, 1, 1)):
 
     Returns
     -------
-    outer, inner, horz, vert : tuple of objects
+    outer, inner, horz, vert : tuple of psychopy Circle and Rect objects
         The objects that make up the fixation stimulus.
 
     References

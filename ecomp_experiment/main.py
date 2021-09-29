@@ -6,7 +6,11 @@ import numpy as np
 from psychopy import monitors, visual
 
 from ecomp_experiment.define_settings import EXPECTED_FPS
-from ecomp_experiment.define_stimuli import get_digit_stims, get_fixation_stim
+from ecomp_experiment.define_stimuli import (
+    get_choice_stims,
+    get_digit_stims,
+    get_fixation_stim,
+)
 from ecomp_experiment.define_trials import gen_trials
 from ecomp_experiment.utils import check_framerate
 
@@ -114,7 +118,7 @@ for trial in trials:
         win,
         trial,
         digit_frames=int(fps / 2.75),
-        fade_frames=int(fps / 1),
+        fade_frames=int(fps / 12),
         digit_stims=digit_stims,
     )
 
@@ -123,6 +127,11 @@ for trial in trials:
         win.flip()
 
     # get choice from participant
+    choice_stims = get_choice_stims(win, stream="single", participant_id=1)
+    for frame in range(fps * 2):
+        for stim in choice_stims:
+            stim.draw()
+        win.flip()
 
     # display participant choice
 
