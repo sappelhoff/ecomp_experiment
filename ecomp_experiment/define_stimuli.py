@@ -1,6 +1,50 @@
 """Define stimuli for experiment."""
 
+import numpy as np
 from psychopy import visual
+
+
+def get_digit_stims(win, color1=(1, 0, 0), color2=(0, 0, 1), height=1):
+    """Pre-generate all digit stimuli.
+
+    Parameters
+    ----------
+    win : psychopy.visual.Window
+        The psychopy window on which to draw the stimuli.
+    color1 : tuple
+        The first color that the stimuli may have.
+    color2 : tuple
+        The second color that the stimuli may have.
+    height : int | float
+        height of the stimuli in degrees visual angle.
+
+    Returns
+    -------
+    digit_stims : dict
+        Contains keys 1 to 9 and negative 1 to negative 9. Corresponding
+        to digits in color1 and color2, respectively.
+
+    """
+    digits = [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+    digit_stims = dict()
+    for digit in digits:
+        color = color1 if digit < 0 else color2
+        stim = visual.TextStim(
+            win,
+            height=height,
+            units="deg",
+            color=color,
+            text=f"{np.abs(digit)}",
+            font="Liberation Sans",
+            pos=(0, 0),
+            alignText="center",
+            anchorHoriz="center",
+            anchorVert="center",
+        )
+        digit_stims[digit] = stim
+
+    return digit_stims
 
 
 def get_fixation_stim(win, back_color=(0, 0, 0), stim_color=(1, 1, 1)):
