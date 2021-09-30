@@ -1,7 +1,7 @@
 """Define stimuli for experiment."""
 
 import numpy as np
-from psychopy import visual
+from psychopy import tools, visual
 
 
 def get_choice_stims(win, stream, participant_id, height=1):
@@ -30,53 +30,59 @@ def get_choice_stims(win, stream, participant_id, height=1):
         win=win,
         height=height,
         units="deg",
-        font="Liberation Sans",
+        font="Liberation Mono",
         anchorVert="center",
     )
 
     if stream == "single":
-        left_text = ["↑a", "↓a"][int(participant_id % 2 == 0)]
-        right_text = ["↓a", "↑a"][int(participant_id % 2 == 0)]
+        left_text = ["↑", "↓"][int(participant_id % 2 == 0)]
+        right_text = ["↓", "↑"][int(participant_id % 2 == 0)]
         center_text = "5"
         assert left_text != right_text
-        left_color = (0, 0, 0)
-        right_color = (0, 0, 0)
+        left_color = (1, 1, 1)
+        right_color = (1, 1, 1)
 
     else:
         assert stream == "dual"
         left_color = [(1, 0, 0), (0, 0, 1)][int(participant_id % 2 == 0)]
         right_color = [(0, 0, 1), (1, 0, 0)][int(participant_id % 2 == 0)]
         assert left_color != right_color
-        left_text = "↑a"
-        right_text = "↑a"
-        center_text = "or"
+        left_text = "↑"
+        right_text = "↑"
+        center_text = "|"
 
-    # Design one for left, one for center, and one for right
-    left = visual.TextStim(
-        **kwargs,
-        text=left_text,
-        pos=(-0.1, 0),
-        alignText="left",
-        anchorHoriz="left",
-        color=left_color,
-    )
-
+    # Design one for center, one for left, and one for right
     center = visual.TextStim(
         **kwargs,
         text=center_text,
         pos=(0, 0),
-        alignText="left",
-        anchorHoriz="left",
+        alignText="center",
+        anchorHoriz="center",
         color=(1, 1, 1),
+    )
+
+    center_width_pix = center.boundingBox[0]
+    center_width_deg = tools.monitorunittools.pix2deg(center_width_pix, win.monitor)
+    dist = (center_width_deg / 2) * 1.1
+
+    left = visual.TextStim(
+        **kwargs,
+        text=left_text,
+        pos=(-dist, 0),
+        alignText="right",
+        anchorHoriz="right",
+        color=left_color,
+        bold=True,
     )
 
     right = visual.TextStim(
         **kwargs,
         text=right_text,
-        pos=(0.1, 0),
-        alignText="right",
-        anchorHoriz="right",
+        pos=(dist, 0),
+        alignText="left",
+        anchorHoriz="left",
         color=right_color,
+        bold=True,
     )
 
     choice_stims = [left, center, right]
@@ -115,7 +121,7 @@ def get_digit_stims(win, color1=(1, 0, 0), color2=(0, 0, 1), height=1):
             units="deg",
             color=color,
             text=f"{np.abs(digit)}",
-            font="Liberation Sans",
+            font="Liberation Mono",
             pos=(0, 0),
             alignText="center",
             anchorHoriz="center",

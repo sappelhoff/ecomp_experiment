@@ -14,9 +14,6 @@ from ecomp_experiment.define_stimuli import (
 from ecomp_experiment.define_trials import gen_trials
 from ecomp_experiment.utils import check_framerate
 
-# %%
-
-
 trials = gen_trials(2)
 
 my_monitor = monitors.Monitor(name="benq")
@@ -127,7 +124,7 @@ for trial in trials:
         win.flip()
 
     # get choice from participant
-    choice_stims = get_choice_stims(win, stream="single", participant_id=1)
+    choice_stims = get_choice_stims(win, stream="dual", participant_id=1, height=2)
     for frame in range(fps * 2):
         for stim in choice_stims:
             stim.draw()
