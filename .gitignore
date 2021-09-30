@@ -2,3 +2,5 @@
 .vscode
 .ipynb_checkpoints
 __pycache__
+/experiment_data/*
+!/experiment_data/README.md
