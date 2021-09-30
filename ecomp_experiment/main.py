@@ -17,10 +17,8 @@ from ecomp_experiment.define_stimuli import (
     get_digit_stims,
     get_fixation_stim,
 )
-from ecomp_experiment.define_trials import gen_trials
-from ecomp_experiment.utils import check_framerate
-
-# %%
+from ecomp_experiment.define_trials import evaluate_trial_correct, gen_trials
+from ecomp_experiment.utils import check_framerate, map_key_to_choice
 
 trials = gen_trials(2)
 
@@ -29,7 +27,7 @@ width, height = my_monitor.getSizePix()
 
 
 win = visual.Window(
-    color=(0, 0, 0),  # Background color: RGB [-1,1]
+    color=(-1, -1, -1),  # Background color: RGB [-1,1]
     fullscr=True,  # Fullscreen for better timing
     monitor=my_monitor,
     units="deg",
@@ -102,16 +100,17 @@ digit_stims = get_digit_stims(win, height=5)
 outer, inner, horz, vert = get_fixation_stim(win)
 fixation_stim_parts = [outer, horz, vert, inner]
 
+stream = "dual"
 rt_clock = core.Clock()
 iti_rng = np.random.default_rng()
-for trial in trials:
+for itrial, trial in enumerate(trials):
 
     # Show fixstim
     for stim in fixation_stim_parts:
         stim.setAutoDraw(True)
 
     # jittered inter-trial-interval
-    iti_ms = display_iti(win, 500, 1000, fps, iti_rng)
+    iti_ms = display_iti(win, 500, 1500, fps, iti_rng)
 
     # 500ms before first sample onset,remove fixstim
     for stim in fixation_stim_parts:
@@ -128,23 +127,47 @@ for trial in trials:
         digit_stims=digit_stims,
     )
 
-    # wait briefly after offset of last sample
-    for frame in range(int(fps / 2.75) + int(fps / 12)):
-        win.flip()
-
     # get choice from participant
-    choice_stims = get_choice_stims(win, stream="dual", participant_id=1, height=2)
+    state = 1
+    choice_stims = get_choice_stims(win, stream=stream, state=state, height=2)
     for stim in choice_stims:
         stim.draw()
 
     rt_clock.reset()
     win.flip()
     key_rt = event.waitKeys(maxWait=3, keyList=["left", "right"], timeStamped=rt_clock)
-    print(key_rt)
 
-    # display participant choice
+    if key_rt is None:
+        choice = "n/a"
+        rt = "n/a"
+        valid = False
+    else:
+        assert len(key_rt) == 1
+        key = key_rt[0][0]
+        choice = map_key_to_choice(key, state, stream)
+        rt = key_rt[0][1]
+        valid = True
 
-    print(np.abs(trial).mean())
+    # evaluate correctness of choice
+    correct, ambiguous = evaluate_trial_correct(trial, choice, stream)
+
+    # Save stuff
+    savedict = dict(
+        trial=itrial,
+        choice=choice,
+        ambiguous=ambiguous,
+        rt=rt,
+        validity=valid,
+        iti=iti_ms,
+        correct=correct,
+        stream=stream,
+    )
+    samples = dict(
+        zip([f"sample{i}" for i in range(1, 9)], [sample for sample in trial])
+    )
+    savedict.update(samples)
+
+    # Do a block break and display feedback
 
 win.close()
 
@@ -202,7 +225,7 @@ def display_survey_gui():
 
     fname = "experiment_info.json"
     with open(dirname / fname, "w") as fout:
-        json.dump(data, fout, indent=4, sort_keys=True)
+        json.dump(data, fout, indent=4, ensure_ascii=False, sort_keys=True)
 
     print(data)
 

@@ -4,7 +4,7 @@ import numpy as np
 from psychopy import tools, visual
 
 
-def get_choice_stims(win, stream, participant_id, height=1):
+def get_choice_stims(win, stream, state, height=1):
     """Get the stimuli used for inquiring participant choice.
 
     Parameters
@@ -13,9 +13,9 @@ def get_choice_stims(win, stream, participant_id, height=1):
         The psychopy window on which to draw the stimuli.
     stream : {"single", "dual"}
         Whether the single or dual stream choice stim should be prepared.
-    participant_id : int
-        The participant ID, used for counterbalancing on which side (left/right)
-        which answer option is displayed (using even versus odd IDs to distinguish).
+    state : {0, 1}
+        One of two states of the stimuli. Used for counterbalancing on
+        which side (left/right) which answer option is displayed.
     height : int | float
         The height of the stimuli in degrees visual angle.
 
@@ -35,8 +35,8 @@ def get_choice_stims(win, stream, participant_id, height=1):
     )
 
     if stream == "single":
-        left_text = ["↑", "↓"][int(participant_id % 2 == 0)]
-        right_text = ["↓", "↑"][int(participant_id % 2 == 0)]
+        left_text = ["↑", "↓"][state]
+        right_text = ["↓", "↑"][state]
         center_text = "5"
         assert left_text != right_text
         left_color = (1, 1, 1)
@@ -44,8 +44,8 @@ def get_choice_stims(win, stream, participant_id, height=1):
 
     else:
         assert stream == "dual"
-        left_color = [(1, 0, 0), (0, 0, 1)][int(participant_id % 2 == 0)]
-        right_color = [(0, 0, 1), (1, 0, 0)][int(participant_id % 2 == 0)]
+        left_color = [(1, -1, -1), (-1, -1, 1)][state]
+        right_color = [(-1, -1, 1), (1, -1, -1)][state]
         assert left_color != right_color
         left_text = "↑"
         right_text = "↑"
@@ -58,7 +58,7 @@ def get_choice_stims(win, stream, participant_id, height=1):
         pos=(0, 0),
         alignText="center",
         anchorHoriz="center",
-        color=(1, 1, 1),
+        color=(0, 0, 0),
     )
 
     center_width_pix = center.boundingBox[0]
@@ -89,7 +89,7 @@ def get_choice_stims(win, stream, participant_id, height=1):
     return choice_stims
 
 
-def get_digit_stims(win, color1=(1, 0, 0), color2=(0, 0, 1), height=1):
+def get_digit_stims(win, color1=(1, -1, -1), color2=(-1, -1, 1), height=1):
     """Pre-generate all digit stimuli.
 
     Parameters
@@ -132,7 +132,7 @@ def get_digit_stims(win, color1=(1, 0, 0), color2=(0, 0, 1), height=1):
     return digit_stims
 
 
-def get_fixation_stim(win, back_color=(0, 0, 0), stim_color=(1, 1, 1)):
+def get_fixation_stim(win, back_color=(-1, -1, -1), stim_color=(0, 0, 0)):
     """Provide objects to represent a fixation stimulus as in [1]_.
 
     Parameters
