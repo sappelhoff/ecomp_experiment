@@ -3,7 +3,7 @@
 # %%
 
 import numpy as np
-from psychopy import monitors, visual
+from psychopy import core, event, monitors, visual
 
 from ecomp_experiment.define_settings import EXPECTED_FPS
 from ecomp_experiment.define_stimuli import (
@@ -94,6 +94,7 @@ digit_stims = get_digit_stims(win, height=5)
 outer, inner, horz, vert = get_fixation_stim(win)
 fixation_stim_parts = [outer, horz, vert, inner]
 
+rt_clock = core.Clock()
 iti_rng = np.random.default_rng()
 for trial in trials:
 
@@ -125,10 +126,13 @@ for trial in trials:
 
     # get choice from participant
     choice_stims = get_choice_stims(win, stream="dual", participant_id=1, height=2)
-    for frame in range(fps * 2):
-        for stim in choice_stims:
-            stim.draw()
-        win.flip()
+    for stim in choice_stims:
+        stim.draw()
+
+    rt_clock.reset()
+    win.flip()
+    key_rt = event.waitKeys(maxWait=3, keyList=["left", "right"], timeStamped=rt_clock)
+    print(key_rt)
 
     # display participant choice
 
