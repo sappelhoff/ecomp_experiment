@@ -5,6 +5,11 @@ import numpy as np
 def gen_trial(rng):
     """Generate trials for a participant.
 
+    A trial consists out of 8 samples, which are digits
+    between 1 and 9 that are of two colors - here indicated
+    by the sign (negative or positive). Each trial contains
+    exactly 4 samples of each color.
+
     Parameters
     ----------
     rng : np.random.Generator
@@ -15,7 +20,6 @@ def gen_trial(rng):
     -------
     color_samples : np.ndarray, shape(8,)
         Samples for this trial.
-
     """
     # Digits from 1 to 9
     digits = np.arange(1, 10)
@@ -34,7 +38,27 @@ def gen_trial(rng):
 
 
 def gen_trials(n_trials, prop_regen=0, seed=None):
-    """Generate multiple trials."""
+    """Generate multiple trials.
+
+    Parameters
+    ----------
+    n_trials : int
+        The number of trials to generate.
+    prop_regen : float between 0 and 1
+        The proportion of trials to regenerate. Will select the given proportion
+        based on trials sorted by difficulty difference between single and dual stream.
+        This parameter defaults to 0 (do not generate any trials), but could be used
+        to help avoid trials that are very different between single and dual stream
+        conditions in terms of difficulty (based on expected value difference between
+        options).
+    seed : int
+        The seed for the random number generator.
+
+    Returns
+    -------
+    trials : np.ndarray, shape(n_trials, 8)
+        The generated trials, with 8 samples each.
+    """
     assert prop_regen >= 0 and prop_regen <= 1, "`prop_regen` must be between 0 and 1."
     rng = np.random.default_rng(seed)
 
@@ -59,7 +83,18 @@ def gen_trials(n_trials, prop_regen=0, seed=None):
 
 
 def calc_trial_difficulty_diffs(trials):
-    """Calculate difficulty diffference of each trial between single and dual stream."""
+    """Calculate difficulty diffference of each trial between single and dual stream.
+
+    Parameters
+    ----------
+    trials : np.ndarray, shape(n_trials, 8)
+        The trials to calculate difficulty differences for.
+
+    Returns
+    -------
+    difficulties_diffs : np.ndarray, shape(n_trials,)
+        The difficulty differences of the trials.
+    """
     midpoint = 5
     difficulties_diffs = np.nan * np.zeros(trials.shape[0])
     for itrial, trial in enumerate(trials):
@@ -110,7 +145,7 @@ def evaluate_trial_correct(trial, choice, stream):
         # Set choice to an arbitrary but valid value to evaluate `ambiguous` variable
         # but set `correct` to "n/a" later
         set_correct_na = True
-        choice = {"single": "left", "dual": "red"}[stream]  # arbitrary
+        choice = {"single": "lower", "dual": "red"}[stream]  # arbitrary
 
     digits = np.abs(trial)
     rng = np.random.default_rng()
