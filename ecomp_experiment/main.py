@@ -2,9 +2,15 @@
 
 # %%
 
-import numpy as np
-from psychopy import core, event, monitors, visual
+import datetime
+import json
+import os
+from pathlib import Path
 
+import numpy as np
+from psychopy import core, event, gui, monitors, visual
+
+import ecomp_experiment
 from ecomp_experiment.define_settings import EXPECTED_FPS
 from ecomp_experiment.define_stimuli import (
     get_choice_stims,
@@ -13,6 +19,8 @@ from ecomp_experiment.define_stimuli import (
 )
 from ecomp_experiment.define_trials import gen_trials
 from ecomp_experiment.utils import check_framerate
+
+# %%
 
 trials = gen_trials(2)
 
@@ -143,4 +151,62 @@ win.close()
 
 # %%
 win.close()
+# %%
+
+
+def display_survey_gui():
+    """Gather participant and experiment data."""
+    # Check for real experiment or just a test run
+    survey_gui = gui.Dlg(title="eComp Experiment")
+    survey_gui.addField("Type", choices=["Experiment", "Test"])
+    survey_data = survey_gui.show()
+
+    if survey_gui.OK and survey_data[0] == "Experiment":
+
+        # We want to run the experiment, gather some data
+        survey_gui = gui.Dlg(title="eComp Experiment")
+        survey_gui.addField("ID:", choices=list(range(1, 100)))
+        survey_gui.addField("Age:", choices=list(range(18, 60)))
+        survey_gui.addField("Sex:", choices=["Male", "Female", "Other"])
+        survey_gui.addField("Handedness:", choices=["Right", "Left", "Ambidextrous"])
+        survey_data = survey_gui.show()
+
+    elif survey_gui.OK:
+        assert len(survey_data) == 1 and survey_data[0] == "Test"
+    else:
+        core.quit()
+
+    # Prepare directory for saving data
+    ecomp_dir = Path("main.py").resolve().parent.parent
+    data_dir = ecomp_dir / "experiment_data"
+    assert data_dir.exists()
+    recording_datetime = datetime.datetime.today().isoformat()
+    substr = (
+        "{:02}".format(survey_data[0])
+        if isinstance(survey_data[0], int)
+        else survey_data[0]
+    )
+    dirname = data_dir / f"sub-{substr}_{recording_datetime}"
+    os.makedirs(dirname)
+
+    # Save available participant data
+    if len(survey_data) > 1:
+        survey_data_kwargs = dict(zip(["ID", "Age", "Sex", "Handedness"], survey_data))
+    else:
+        survey_data_kwargs = dict(zip(["ID"], survey_data))
+    data = dict(
+        experiment_version=ecomp_experiment.__version__,
+        recording_datetime=recording_datetime,
+    )
+    data.update(survey_data_kwargs)
+
+    fname = "experiment_info.json"
+    with open(dirname / fname, "w") as fout:
+        json.dump(data, fout, indent=4, sort_keys=True)
+
+    print(data)
+
+
+# %%
+display_survey_gui()
 # %%
