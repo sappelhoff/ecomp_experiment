@@ -1,5 +1,7 @@
 """Provide utility functions for the main experiment."""
 
+import csv
+
 from psychopy import core
 
 
@@ -82,3 +84,25 @@ def map_key_to_choice(key, state, stream):
         assert choice in ["red", "blue"]
 
     return choice
+
+
+def save_dict(fname, savedict):
+    """Write dict to file.
+
+    Parameters
+    ----------
+    fname : pathlib.Path
+        The file location to write to. Will be created if it doesn't
+        exist yet; else, content is appended.
+    savedict : dict
+        The data to write.
+    """
+    if not fname.exists():
+        with open(fname, "w") as fout:
+            writer = csv.DictWriter(fout, savedict.keys(), delimiter="\t")
+            writer.writeheader()
+            writer.writerow(savedict)
+    else:
+        with open(fname, "a") as fout:
+            writer = csv.DictWriter(fout, savedict.keys(), delimiter="\t")
+            writer.writerow(savedict)
