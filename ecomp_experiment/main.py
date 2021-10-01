@@ -13,12 +13,18 @@ from psychopy import core, event, gui, monitors, visual
 import ecomp_experiment
 from ecomp_experiment.define_settings import EXPECTED_FPS, MONITOR_NAME
 from ecomp_experiment.define_stimuli import (
+    get_central_text_stim,
     get_choice_stims,
     get_digit_stims,
     get_fixation_stim,
 )
 from ecomp_experiment.define_trials import evaluate_trial_correct, gen_trials
-from ecomp_experiment.utils import check_framerate, map_key_to_choice, save_dict
+from ecomp_experiment.utils import (
+    calc_perc_correct,
+    check_framerate,
+    map_key_to_choice,
+    save_dict,
+)
 
 
 def display_survey_gui():
@@ -249,6 +255,39 @@ for itrial, trial in enumerate(trials):
     save_dict(logfile, savedict)
 
     # Do a block break and display feedback
+    def display_block_break(win, logfile, itrial, ntrials, blocksize):
+        """Display a break screen, including feedback.
+
+        Parameters
+        ----------
+        win : psychopy.visual.Window
+            The psychopy window on which to draw the stimuli.
+        logfile : pathlib.Path
+            Path object pointing to the logfile for this stream.
+        itrial : int
+            The current trial number
+        ntrials : int
+            The overall number of trials.
+        blocksize : int
+            How many trials fit into one block.
+        """
+        corr_overall, corr_block = calc_perc_correct(logfile, blocksize)
+
+        height = 1
+        color = (1, 1, 1)
+        text = f"You have completed {itrial+1} of {ntrials} trials.\n\n"
+        text += f"Your choices in the past {blocksize} trials "
+        text += f"were {corr_block}% accurate.\n\n"
+        text += f"Your overall accuracy in this task so far is {corr_overall}%.\n\n"
+        text += "Press any key to continue"
+
+        text_stim = get_central_text_stim(win, height, text, color)
+        text_stim.draw()
+        win.flip()
+        event.waitKeys()
+
+    display_block_break(win, logfile, itrial, 2, 1)
+
 
 win.close()
 

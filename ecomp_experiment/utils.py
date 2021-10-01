@@ -2,7 +2,40 @@
 
 import csv
 
+import numpy as np
+import pandas as pd
 from psychopy import core
+
+
+def calc_perc_correct(logfile, blocksize):
+    """Calculate percent correct choices overall and of last block.
+
+    Parameters
+    ----------
+    logfile : pathlib.Path
+        Path object pointing to the logfile for this stream.
+    blocksize : int
+        How many trials fit into one block.
+
+    Returns
+    -------
+    corr_overall, corr_block : int
+        Percentage correct choices overall so far, and in the last block.
+    """
+    df = pd.read_csv(logfile, sep="\t", usecols=["correct"])
+
+    # "n/a" for "correct" means timeout, calculate as incorrect
+    corrects = df["correct"].to_numpy()
+    corrects = [False if np.isnan(i) else i for i in corrects]
+
+    corr_overall = (np.sum(corrects) / len(corrects)) * 100
+    corr_block = (np.sum(corrects[-blocksize:]) / blocksize) * 100
+
+    # round up and turn into int
+    corr_overall = int(np.ceil(corr_overall))
+    corr_block = int(np.ceil(corr_block))
+
+    return corr_overall, corr_block
 
 
 def set_fixstim_color(stim, color):

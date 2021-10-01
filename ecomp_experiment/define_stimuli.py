@@ -4,6 +4,23 @@ import numpy as np
 from psychopy import tools, visual
 
 
+def get_central_text_stim(win, height, text, color):
+    """Get a central text stimulus to use e.g., for the block break."""
+    text_stim = visual.TextStim(
+        win=win,
+        height=height,
+        units="deg",
+        font="Liberation Mono",
+        anchorVert="center",
+        text=text,
+        pos=(0, 0),
+        alignText="center",
+        anchorHoriz="center",
+        color=color,
+    )
+    return text_stim
+
+
 def get_choice_stims(win, stream, state, height=1):
     """Get the stimuli used for inquiring participant choice.
 
