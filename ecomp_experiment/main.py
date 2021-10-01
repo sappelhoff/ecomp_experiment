@@ -11,7 +11,7 @@ import numpy as np
 from psychopy import core, event, gui, monitors, visual
 
 import ecomp_experiment
-from ecomp_experiment.define_settings import EXPECTED_FPS
+from ecomp_experiment.define_settings import EXPECTED_FPS, MONITOR_NAME
 from ecomp_experiment.define_stimuli import (
     get_choice_stims,
     get_digit_stims,
@@ -19,23 +19,6 @@ from ecomp_experiment.define_stimuli import (
 )
 from ecomp_experiment.define_trials import evaluate_trial_correct, gen_trials
 from ecomp_experiment.utils import check_framerate, map_key_to_choice, save_dict
-
-trials = gen_trials(2)
-
-my_monitor = monitors.Monitor(name="benq")
-width, height = my_monitor.getSizePix()
-
-
-win = visual.Window(
-    color=(-1, -1, -1),  # Background color: RGB [-1,1]
-    fullscr=True,  # Fullscreen for better timing
-    monitor=my_monitor,
-    units="deg",
-    winType="pyglet",
-    size=(width, height),
-)
-
-fps = check_framerate(win, EXPECTED_FPS)
 
 
 def display_survey_gui():
@@ -45,29 +28,40 @@ def display_survey_gui():
 
     Returns
     -------
-    dirname : pathlib.Path
+    streamdir : pathlib.Path
         Path object pointing to the directory where to save data
         for this participant.
+    stream : {"single", "dual"}
+        The stream to run in the experiment.
     """
     # Check for real experiment or just a test run
-    survey_gui = gui.Dlg(title="eComp Experiment")
-    survey_gui.addField("Type", choices=["Experiment", "Test"])
-    survey_data = survey_gui.show()
+    survey_gui1 = gui.Dlg(title="eComp Experiment")
+    survey_gui1.addField("Type", choices=["Experiment", "Test"])
+    survey_gui1.addField("Stream", choices=["single", "dual"])
+    survey_data1 = survey_gui1.show()
 
-    if survey_gui.OK and survey_data[0] == "Experiment":
+    if not survey_gui1.OK:
+        # Cancel the program in case of "cancel"
+        core.quit()
+
+    run_type = survey_data1[0]
+    stream = survey_data1[1]
+
+    if run_type == "Experiment":
 
         # We want to run the experiment, gather some data
-        survey_gui = gui.Dlg(title="eComp Experiment")
-        survey_gui.addField("ID:", choices=list(range(1, 100)))
-        survey_gui.addField("Age:", choices=list(range(18, 60)))
-        survey_gui.addField("Sex:", choices=["Male", "Female", "Other"])
-        survey_gui.addField("Handedness:", choices=["Right", "Left", "Ambidextrous"])
-        survey_data = survey_gui.show()
+        survey_gui2 = gui.Dlg(title="eComp Experiment")
+        survey_gui2.addField("ID:", choices=list(range(1, 100)))
+        survey_gui2.addField("Age:", choices=list(range(18, 60)))
+        survey_gui2.addField("Sex:", choices=["Male", "Female", "Other"])
+        survey_gui2.addField("Handedness:", choices=["Right", "Left", "Ambidextrous"])
+        survey_data2 = survey_gui2.show()
 
-    elif survey_gui.OK:
-        assert len(survey_data) == 1 and survey_data[0] == "Test"
+        if not survey_gui2.OK:
+            # Cancel the program in case of "cancel"
+            core.quit()
     else:
-        core.quit()
+        survey_data2 = ["Test"]
 
     # Prepare directory for saving data
     ecomp_dir = Path("main.py").resolve().parent.parent
@@ -75,29 +69,31 @@ def display_survey_gui():
     assert data_dir.exists()
     recording_datetime = datetime.datetime.today().isoformat()
     substr = (
-        "{:02}".format(survey_data[0])
-        if isinstance(survey_data[0], int)
-        else survey_data[0]
+        "{:02}".format(survey_data2[0])
+        if isinstance(survey_data2[0], int)
+        else survey_data2[0]
     )
-    dirname = data_dir / f"sub-{substr}_{recording_datetime}"
-    os.makedirs(dirname)
+    subjdir = data_dir / f"sub-{substr}_{recording_datetime}"
+    streamdir = subjdir / stream
+    os.makedirs(subjdir, exist_ok=True)
+    os.makedirs(streamdir, exist_ok=True)
 
     # Save available participant data
-    if len(survey_data) > 1:
-        survey_data_kwargs = dict(zip(["ID", "Age", "Sex", "Handedness"], survey_data))
+    if len(survey_data2) > 1:
+        kwargs = dict(zip(["ID", "Age", "Sex", "Handedness"], survey_data2))
     else:
-        survey_data_kwargs = dict(zip(["ID"], survey_data))
+        kwargs = dict(zip(["ID"], survey_data2))
     data = dict(
         experiment_version=ecomp_experiment.__version__,
         recording_datetime=recording_datetime,
     )
-    data.update(survey_data_kwargs)
+    data.update(kwargs)
 
     fname = "experiment_info.json"
-    with open(dirname / fname, "w") as fout:
+    with open(subjdir / fname, "w") as fout:
         json.dump(data, fout, indent=4, ensure_ascii=False, sort_keys=True)
 
-    return dirname
+    return streamdir, stream
 
 
 def display_iti(win, min_ms, max_ms, fps, rng):
@@ -156,8 +152,27 @@ def display_trial(win, trial, digit_frames, fade_frames, digit_stims):
 
 
 # Prepare logging
-dirname = display_survey_gui()
-logfile = dirname / "data.tsv"
+streamdir, stream = display_survey_gui()
+logfile = streamdir / "data.tsv"
+
+# prepare the trials
+trials = gen_trials(2)
+
+# prepare the window
+my_monitor = monitors.Monitor(name=MONITOR_NAME)
+width, height = my_monitor.getSizePix()
+
+
+win = visual.Window(
+    color=(-1, -1, -1),  # Background color: RGB [-1,1]
+    fullscr=True,  # Fullscreen for better timing
+    monitor=my_monitor,
+    units="deg",
+    winType="pyglet",
+    size=(width, height),
+)
+
+fps = check_framerate(win, EXPECTED_FPS)
 
 # get digits
 digit_stims = get_digit_stims(win, height=5)
@@ -166,7 +181,6 @@ digit_stims = get_digit_stims(win, height=5)
 outer, inner, horz, vert = get_fixation_stim(win)
 fixation_stim_parts = [outer, horz, vert, inner]
 
-stream = "dual"
 rt_clock = core.Clock()
 iti_rng = np.random.default_rng()
 for itrial, trial in enumerate(trials):
