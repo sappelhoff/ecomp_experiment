@@ -1,14 +1,17 @@
 """Provide utility functions for the main experiment."""
 
 import csv
+import glob
+import os
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from psychopy import core
 
 
-def calc_perc_correct(logfile, blocksize):
-    """Calculate percent correct choices overall and of last block.
+def calc_accuracy(logfile, blocksize):
+    """Calculate accuracy as percent correct choices overall and of last block.
 
     Parameters
     ----------
@@ -19,8 +22,8 @@ def calc_perc_correct(logfile, blocksize):
 
     Returns
     -------
-    corr_overall, corr_block : int
-        Percentage correct choices overall so far, and in the last block.
+    acc_overall, acc_block : int
+        Accuracy as percentage correct choices overall so far, and in the last block.
     """
     df = pd.read_csv(logfile, sep="\t", usecols=["correct"])
 
@@ -28,14 +31,14 @@ def calc_perc_correct(logfile, blocksize):
     corrects = df["correct"].to_numpy()
     corrects = [False if np.isnan(i) else i for i in corrects]
 
-    corr_overall = (np.sum(corrects) / len(corrects)) * 100
-    corr_block = (np.sum(corrects[-blocksize:]) / blocksize) * 100
+    acc_overall = (np.sum(corrects) / len(corrects)) * 100
+    acc_block = (np.sum(corrects[-blocksize:]) / blocksize) * 100
 
     # round up and turn into int
-    corr_overall = int(np.ceil(corr_overall))
-    corr_block = int(np.ceil(corr_block))
+    acc_overall = int(np.ceil(acc_overall))
+    acc_block = int(np.ceil(acc_block))
 
-    return corr_overall, corr_block
+    return acc_overall, acc_block
 
 
 def set_fixstim_color(stim, color):
@@ -139,3 +142,57 @@ def save_dict(fname, savedict):
         with open(fname, "a") as fout:
             writer = csv.DictWriter(fout, savedict.keys(), delimiter="\t")
             writer.writerow(savedict)
+
+
+def calc_bonus(subj_id):
+    """Calculate bonus money for a study participant.
+
+    Bonus money is between 0 and 10 euro, based on overall % correct trials
+    in single and dual stream tasks.
+
+    Function must be run from the root of the repository.
+    Run this function with (replace 'S' with the subject number):
+    python -c "from ecomp_experiment.utils import calc_bonus; calc_bonus('S')"
+
+    """
+    if not isinstance(subj_id, int):
+        raise ValueError("\n\n>>>>>> Supplied an integer for subj_id?")
+    cwd = os.getcwd()
+    ecomp_dir = Path(cwd).resolve()
+    assert (ecomp_dir / "experiment_data").exists(), "\n\n>>>>>> Ran from root of repo?"
+    assert (ecomp_dir / "LICENSE").exists(), "\n\n>>>>>> Ran from root of repo?"
+    data_dir = ecomp_dir / "experiment_data"
+
+    # Calculate accuracies for each stream
+    accs = []
+    for stream in ["single", "dual"]:
+        search = str(data_dir / "sub-{:02}*".format(subj_id) / stream / "data.tsv")
+        files = glob.glob(search)
+        files_str = "\n".join(files) if len(files) > 0 else "[]"
+        if len(files) != 1:
+            msg = f"Found too few or too many file candidates:\n{files_str}"
+            msg += f"\n\n(Was searching for:\n{search}\n)"
+            raise RuntimeError(msg)
+        logfile = files[0]
+        acc_overall, _ = calc_accuracy(logfile, 1)  # blocksize irrelevant
+        accs.append(acc_overall)
+    accuracy = np.mean(accs)
+
+    # map accuracy to money
+    acc = int(np.ceil(accuracy))
+    # smaller than 60 = 0 € (should not happen = chance level)
+    if acc < 60:
+        bonus = 0
+
+    # larger than 90 = 10 € (highly unlikely to happen)
+    if acc >= 90:
+        bonus = 10
+
+    # Else, map accuracy from 60 to 90 % to 0 to 10 Euros
+    cents = np.linspace(0, 1000, 30)
+    cents_earned = cents[acc - 60]
+    bonus = cents_earned / 100
+
+    # We round up to next euro
+    bonus = int(np.ceil(bonus))
+    print(f"Overall correct: {accuracy}%\nBonus money: {bonus}€")
