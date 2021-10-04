@@ -14,6 +14,95 @@ from ecomp_experiment.define_stimuli import get_central_text_stim
 from ecomp_experiment.utils import calc_accuracy
 
 
+def display_instructions(win, stream):
+    """Display participant instructions.
+
+    Parameters
+    ----------
+    win : psychopy.visual.Window
+        The psychopy window on which to draw the stimuli.
+    stream : {"single", "dual"}
+        The stream to run in the experiment.
+    """
+    text_stim = get_central_text_stim(win, 1, "", (1, 1, 1))
+
+    # prepare instructions
+    common_instructions_start = [
+        "In this study, we want to investigate how humans average numerical values "
+        "when making decisions from rapid sequential samples.",
+        "At the beginning of each trial you will see a gray fixation stimulus in "
+        "the middle of the screen",
+        "After approximately XXX seconds, the trial will start and we will present "
+        "to you a rapid sequence of numbers, one after the other."
+        "Specifically, you will always see 8 numbers between 1 and 9. Half of them "
+        "are in red color, the other half of them are in blue color.",
+    ]
+    single_instructions = [
+        "We will then ask you if the average of the shown numbers is smaller "
+        "or larger than five.",
+        "The display will show you an upwards (larger), and a downwards (smaller) "
+        "arrow on the left and right side of the screen."
+        "You can use the left and right keys in front of you to select the upwards"
+        " or downwards arrow and to indicate whether the average of the shown "
+        "numbers is smaller or larger than five.",
+        "Please note that on each trial, the location of the upwards and "
+        "downwards arrow changes."
+        "In other words, you have to check on each trial which key, left or right,"
+        " means which answer, upwards arrow (larger) or downwards arrow (smaller).",
+    ]
+    dual_instructions = [
+        "We will then ask you which color had the larger average."
+        "The display will show you a blue and a red upwards arrow on the left and "
+        "right side of the screen."
+        "You can use the left and right keys in front of you to select the blue or "
+        "red upwards arrow and to indicate whether the average of the blue or of "
+        "the red numbers is larger.",
+        "Please note that on each trial, the location of the blue and red upwards "
+        "arrow changes."
+        "In other words, you have to check on each trial which key, left or "
+        "right, means which answer, blue or red upwards arrow.",
+    ]
+    common_instructions_end = [
+        "You have 3 seconds to answer. If you do not answer in time, there will be"
+        " a timeout message and your answer is counted as wrong.",
+        "The study will then automatically proceed to the next trial after a "
+        "short time.",
+        "Every XXX trials you will receive information about how accurate your "
+        "choices were.",
+        "Remember that over the whole you can earn a bonus of up to 10 Euros, "
+        "depending on your accuracy (Note that less than 60% accuracy results "
+        "in no bonus)",
+        "Press the right key to end the instructions.",
+    ]
+
+    if stream == "single":
+        instructions = (
+            common_instructions_start + single_instructions + common_instructions_end
+        )
+    else:
+        assert stream == "dual"
+        instructions = (
+            common_instructions_start + dual_instructions + common_instructions_end
+        )
+
+    # Instructions presentation
+    itext = 0
+    while True:
+        text_stim.text = instructions[itext]
+        text_stim.draw()
+        win.flip()
+        keys = event.waitKeys(keyList=["left", "right", "escape"])
+        if keys[0] == "escape":
+            break
+        elif keys[0] == "left":
+            # can't go further back than 0
+            itext = max(0, itext - 1)
+        elif keys[0] == "right":
+            itext += 1
+            if itext >= len(instructions):
+                break
+
+
 def display_survey_gui():
     """Gather participant and experiment data.
 
@@ -21,21 +110,24 @@ def display_survey_gui():
 
     Returns
     -------
-    run_type : {"experiment", "training", "test"}
+    run_type : {"experiment", "training", "test", "instructions"}
         The type/mode that the experiment runs in. "experiment" should be
         used to run participants, "test" behaves equally, but saves data to
         "Test" subject folders (always overwritten), and "training" should
         only be used for training trials, because it will display additional
-        feedback.
-    streamdir : pathlib.Path
-        Path object pointing to the directory where to save data
-        for this participant.
+        feedback. "instructions" will just display participant instructions
+        and then quit.
+    streamdir : pathlib.Path | None
+        Path object pointing to the directory where to save data for this
+        participant. Will be None if `run_type` is "instructions".
     stream : {"single", "dual"}
         The stream to run in the experiment.
     """
     # Check for real experiment or just a test run
     survey_gui1 = gui.Dlg(title="eComp Experiment")
-    survey_gui1.addField("Type", choices=["experiment", "training", "test"])
+    survey_gui1.addField(
+        "Type", choices=["experiment", "training", "test", "instructions"]
+    )
     survey_gui1.addField("Stream", choices=["single", "dual"])
     survey_data1 = survey_gui1.show()
 
@@ -59,6 +151,8 @@ def display_survey_gui():
         if not survey_gui2.OK:
             # Cancel the program in case of "cancel"
             core.quit()
+    elif run_type == "instructions":
+        return run_type, None, stream
     else:
         assert run_type in ["training", "test"]
         survey_data2 = ["test"]

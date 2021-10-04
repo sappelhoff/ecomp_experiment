@@ -1,4 +1,4 @@
-"""Try this."""
+"""Main flow of the eComp experiment."""
 
 # %%
 
@@ -7,6 +7,7 @@ from psychopy import core, event, monitors, visual
 
 from ecomp_experiment.define_routines import (
     display_block_break,
+    display_instructions,
     display_iti,
     display_survey_gui,
     display_trial,
@@ -23,7 +24,8 @@ from ecomp_experiment.utils import check_framerate, map_key_to_choice, save_dict
 
 # Prepare logging
 run_type, streamdir, stream = display_survey_gui()
-logfile = streamdir / "data.tsv"
+if streamdir is not None:
+    logfile = streamdir / "data.tsv"
 
 # prepare the trials
 trials = gen_trials(2)
@@ -32,10 +34,9 @@ trials = gen_trials(2)
 my_monitor = monitors.Monitor(name=MONITOR_NAME)
 width, height = my_monitor.getSizePix()
 
-
 win = visual.Window(
-    color=(-1, -1, -1),  # Background color: RGB [-1,1]
-    fullscr=True,  # Fullscreen for better timing
+    color=(-1, -1, -1),
+    fullscr=True,
     monitor=my_monitor,
     units="deg",
     winType="pyglet",
@@ -44,13 +45,20 @@ win = visual.Window(
 
 fps = check_framerate(win, EXPECTED_FPS)
 
-# get digits
+# *if just instructions*, display and quit.
+if run_type == "instructions":
+    display_instructions(win, stream)
+    win.close()
+    core.quit()
+
+# get stimuli
 digit_stims = get_digit_stims(win, height=5)
 
-# Get the objects for the fixation stim
 outer, inner, horz, vert = get_fixation_stim(win)
 fixation_stim_parts = [outer, horz, vert, inner]
 
+# Start experiment
+# ----------------
 rt_clock = core.Clock()
 iti_rng = np.random.default_rng()
 state_rng = np.random.default_rng()
@@ -67,7 +75,7 @@ for itrial, trial in enumerate(trials):
     # jittered inter-trial-interval
     iti_ms = display_iti(win, 500, 1500, fps, iti_rng)
 
-    # 500ms before first sample onset,remove fixstim
+    # 500ms before first sample onset, remove fixstim
     for stim in fixation_stim_parts:
         stim.setAutoDraw(False)
     for frame in range(int(np.ceil(fps / 2))):
@@ -101,6 +109,7 @@ for itrial, trial in enumerate(trials):
         assert len(key_rt) == 1
         key = key_rt[0][0]
         if key == "escape":
+            print("\n\nYou pressed the 'escape' key, quitting now ...")
             core.quit()
         choice = map_key_to_choice(key, state, stream)
         rt = key_rt[0][1]
@@ -109,7 +118,7 @@ for itrial, trial in enumerate(trials):
     # evaluate correctness of choice
     correct, ambiguous = evaluate_trial_correct(trial, choice, stream)
 
-    # send feedback if training trials
+    # send feedback *if training trials*
     if (run_type == "training") and (choice != "n/a"):
         correct_str = "correct" if correct else "wrong"
         msg = f"Your choice ({choice}) was {correct_str}."
@@ -118,14 +127,14 @@ for itrial, trial in enumerate(trials):
             training_stim.draw()
             win.flip()
 
-    # send timeout warning if choice too slow
+    # send timeout warning *if choice too slow*
     if choice == "n/a":
         warn_stim = get_central_text_stim(win, 1, "Too slow!", (1, -1, -1))
         for frame in range(fps):
             warn_stim.draw()
             win.flip()
 
-    # Save stuff
+    # Save trial data
     savedict = dict(
         trial=itrial,
         choice=choice,
@@ -137,19 +146,13 @@ for itrial, trial in enumerate(trials):
         stream=stream,
         state=state,
     )
-    samples = dict(
-        zip([f"sample{i}" for i in range(1, 9)], [sample for sample in trial])
-    )
+    samples = dict([(f"sample{i+1}", sample) for i, sample in enumerate(trial)])
     savedict.update(samples)
     save_dict(logfile, savedict)
 
-    # Do a block break and display feedback
+    # Every nth trial, do a block break and display feedback
     block_counter = display_block_break(win, logfile, itrial, 2, 1, block_counter, 2)
 
 
+# Finish experiment
 win.close()
-
-
-# %%
-win.close()
-# %%
