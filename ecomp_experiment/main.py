@@ -22,7 +22,7 @@ from ecomp_experiment.define_trials import evaluate_trial_correct, gen_trials
 from ecomp_experiment.utils import check_framerate, map_key_to_choice, save_dict
 
 # Prepare logging
-streamdir, stream = display_survey_gui()
+run_type, streamdir, stream = display_survey_gui()
 logfile = streamdir / "data.tsv"
 
 # prepare the trials
@@ -89,7 +89,9 @@ for itrial, trial in enumerate(trials):
 
     rt_clock.reset()
     win.flip()
-    key_rt = event.waitKeys(maxWait=3, keyList=["left", "right"], timeStamped=rt_clock)
+    key_rt = event.waitKeys(
+        maxWait=3, keyList=["left", "right", "escape"], timeStamped=rt_clock
+    )
 
     if key_rt is None:
         choice = "n/a"
@@ -98,9 +100,23 @@ for itrial, trial in enumerate(trials):
     else:
         assert len(key_rt) == 1
         key = key_rt[0][0]
+        if key == "escape":
+            core.quit()
         choice = map_key_to_choice(key, state, stream)
         rt = key_rt[0][1]
         valid = True
+
+    # evaluate correctness of choice
+    correct, ambiguous = evaluate_trial_correct(trial, choice, stream)
+
+    # send feedback if training trials
+    if (run_type == "training") and (choice != "n/a"):
+        correct_str = "correct" if correct else "wrong"
+        msg = f"Your choice ({choice}) was {correct_str}."
+        training_stim = get_central_text_stim(win, 1, msg, (1, 1, 1))
+        for frame in range(fps * 3):
+            training_stim.draw()
+            win.flip()
 
     # send timeout warning if choice too slow
     if choice == "n/a":
@@ -108,9 +124,6 @@ for itrial, trial in enumerate(trials):
         for frame in range(fps):
             warn_stim.draw()
             win.flip()
-
-    # evaluate correctness of choice
-    correct, ambiguous = evaluate_trial_correct(trial, choice, stream)
 
     # Save stuff
     savedict = dict(

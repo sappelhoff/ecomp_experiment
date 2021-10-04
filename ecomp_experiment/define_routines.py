@@ -21,6 +21,12 @@ def display_survey_gui():
 
     Returns
     -------
+    run_type : {"experiment", "training", "test"}
+        The type/mode that the experiment runs in. "experiment" should be
+        used to run participants, "test" behaves equally, but saves data to
+        "Test" subject folders (always overwritten), and "training" should
+        only be used for training trials, because it will display additional
+        feedback.
     streamdir : pathlib.Path
         Path object pointing to the directory where to save data
         for this participant.
@@ -29,7 +35,7 @@ def display_survey_gui():
     """
     # Check for real experiment or just a test run
     survey_gui1 = gui.Dlg(title="eComp Experiment")
-    survey_gui1.addField("Type", choices=["Experiment", "Test"])
+    survey_gui1.addField("Type", choices=["experiment", "training", "test"])
     survey_gui1.addField("Stream", choices=["single", "dual"])
     survey_data1 = survey_gui1.show()
 
@@ -40,7 +46,7 @@ def display_survey_gui():
     run_type = survey_data1[0]
     stream = survey_data1[1]
 
-    if run_type == "Experiment":
+    if run_type == "experiment":
 
         # We want to run the experiment, gather some data
         survey_gui2 = gui.Dlg(title="eComp Experiment")
@@ -54,7 +60,8 @@ def display_survey_gui():
             # Cancel the program in case of "cancel"
             core.quit()
     else:
-        survey_data2 = ["Test"]
+        assert run_type in ["training", "test"]
+        survey_data2 = ["test"]
 
     # Prepare directory for saving data
     ecomp_dir = Path("main.py").resolve().parent.parent
@@ -71,7 +78,7 @@ def display_survey_gui():
     streamdir = subjdir / stream
 
     # Do not risk overwriting data
-    if streamdir.exists():
+    if streamdir.exists() and run_type == "experiment":
         msg = f"Stream directory {stream} for subject ID {substr} already exists."
         raise RuntimeError(msg)
 
@@ -93,12 +100,12 @@ def display_survey_gui():
 
     fname = f"experiment_info_stream-{stream}.json"
     fpath = subjdir / fname
-    if fpath.exists():
+    if fpath.exists() and run_type == "experiment":
         raise RuntimeError(f"File exists: {fpath}")
     with open(fpath, "w") as fout:
         json.dump(data, fout, indent=4, ensure_ascii=False, sort_keys=True)
 
-    return streamdir, stream
+    return run_type, streamdir, stream
 
 
 def display_iti(win, min_ms, max_ms, fps, rng):
@@ -206,10 +213,8 @@ def display_block_break(
     text_stim.draw()
     win.flip()
     if do_hard_break:
-        while True:
-            keys = event.waitKeys()
-            if (len(keys) == 1) and (keys[0] == "escape"):
-                break
+        # only pressing escape works
+        event.waitKeys(keyList=["escape"])
     else:
         event.waitKeys()
 
