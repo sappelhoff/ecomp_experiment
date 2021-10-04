@@ -59,19 +59,27 @@ def display_survey_gui():
     # Prepare directory for saving data
     ecomp_dir = Path("main.py").resolve().parent.parent
     data_dir = ecomp_dir / "experiment_data"
-    assert data_dir.exists()
-    recording_datetime = datetime.datetime.today().isoformat()
+    assert data_dir.exists(), "Sure you are in the right directory?"
+
+    # Create subj dir
     substr = (
         "{:02}".format(survey_data2[0])
         if isinstance(survey_data2[0], int)
         else survey_data2[0]
     )
-    subjdir = data_dir / f"sub-{substr}_{recording_datetime}"
+    subjdir = data_dir / f"sub-{substr}"
     streamdir = subjdir / stream
+
+    # Do not risk overwriting data
+    if streamdir.exists():
+        msg = f"Stream directory {stream} for subject ID {substr} already exists."
+        raise RuntimeError(msg)
+
     os.makedirs(subjdir, exist_ok=True)
     os.makedirs(streamdir, exist_ok=True)
 
     # Save available participant data
+    recording_datetime = datetime.datetime.today().isoformat()
     if len(survey_data2) > 1:
         kwargs = dict(zip(["ID", "Age", "Sex", "Handedness"], survey_data2))
     else:
@@ -79,11 +87,15 @@ def display_survey_gui():
     data = dict(
         experiment_version=ecomp_experiment.__version__,
         recording_datetime=recording_datetime,
+        stream=stream,
     )
     data.update(kwargs)
 
-    fname = "experiment_info.json"
-    with open(subjdir / fname, "w") as fout:
+    fname = f"experiment_info_stream-{stream}.json"
+    fpath = subjdir / fname
+    if fpath.exists():
+        raise RuntimeError(f"File exists: {fpath}")
+    with open(fpath, "w") as fout:
         json.dump(data, fout, indent=4, ensure_ascii=False, sort_keys=True)
 
     return streamdir, stream
