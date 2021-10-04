@@ -17,3 +17,10 @@ MONITOR_NAME, EXPECTED_FPS = {
 # in "Ports /COM & LPT)" and enter the COM port number in the constructor.
 # If there is no TriggerBox, set ser to None
 SER = None
+
+# Define stimuli lengths
+MIN_ITI_MS = 500
+MAX_ITI_MS = 1500
+DIGIT_FRAMES = int(EXPECTED_FPS / 2.75)
+FADE_FRAMES = int(EXPECTED_FPS / 12)
+MAXWAIT_RESPONSE_S = 3

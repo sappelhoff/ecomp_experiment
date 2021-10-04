@@ -13,7 +13,12 @@ from ecomp_experiment.define_routines import (
     display_trial,
 )
 from ecomp_experiment.define_settings import (
+    DIGIT_FRAMES,
     EXPECTED_FPS,
+    FADE_FRAMES,
+    MAX_ITI_MS,
+    MAXWAIT_RESPONSE_S,
+    MIN_ITI_MS,
     MONITOR_NAME,
     SER_ADDRESS,
     SER_WAITSECS,
@@ -93,7 +98,7 @@ for itrial, trial in enumerate(trials):
         stim.setAutoDraw(True)
 
     # jittered inter-trial-interval
-    iti_ms = display_iti(win, 500, 1500, fps, iti_rng)
+    iti_ms = display_iti(win, MIN_ITI_MS, MAX_ITI_MS, fps, iti_rng)
 
     # 500ms before first sample onset, remove fixstim
     for stim in fixation_stim_parts:
@@ -105,8 +110,8 @@ for itrial, trial in enumerate(trials):
     display_trial(
         win,
         trial,
-        digit_frames=int(fps / 2.75),
-        fade_frames=int(fps / 12),
+        digit_frames=DIGIT_FRAMES,
+        fade_frames=FADE_FRAMES,
         digit_stims=digit_stims,
     )
 
@@ -118,7 +123,9 @@ for itrial, trial in enumerate(trials):
     rt_clock.reset()
     win.flip()
     key_rt = event.waitKeys(
-        maxWait=3, keyList=["left", "right", "escape"], timeStamped=rt_clock
+        maxWait=MAXWAIT_RESPONSE_S,
+        keyList=["left", "right", "escape"],
+        timeStamped=rt_clock,
     )
 
     if key_rt is None:
