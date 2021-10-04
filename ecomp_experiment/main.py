@@ -12,7 +12,15 @@ from ecomp_experiment.define_routines import (
     display_survey_gui,
     display_trial,
 )
-from ecomp_experiment.define_settings import EXPECTED_FPS, MONITOR_NAME
+from ecomp_experiment.define_settings import (
+    EXPECTED_FPS,
+    MONITOR_NAME,
+    SER_ADDRESS,
+    SER_WAITSECS,
+    FakeSerial,
+    MySerial,
+    get_ttl_dict,
+)
 from ecomp_experiment.define_stimuli import (
     get_central_text_stim,
     get_choice_stims,
@@ -57,8 +65,20 @@ digit_stims = get_digit_stims(win, height=5)
 outer, inner, horz, vert = get_fixation_stim(win)
 fixation_stim_parts = [outer, horz, vert, inner]
 
+# Setup serial port
+ttl_dict = get_ttl_dict()
+
+if SER_ADDRESS is None:
+    ser_port = FakeSerial()
+    print("No serial port specified. We will not send TTL triggers to EEG.")
+else:
+    ser_port = MySerial(SER_ADDRESS, waitsecs=SER_WAITSECS)
+
 # Start experiment
 # ----------------
+value = ttl_dict[f"{stream}_begin_experiment"]
+ser_port.write(value)
+
 rt_clock = core.Clock()
 iti_rng = np.random.default_rng()
 state_rng = np.random.default_rng()

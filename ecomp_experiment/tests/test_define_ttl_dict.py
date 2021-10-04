@@ -1,6 +1,12 @@
 """Test the TTL trigger script for basic integrity."""
+import time
 
-from ecomp_experiment.define_ttl_dict import DUAL_STREAM_CONST, get_ttl_dict
+from ecomp_experiment.define_ttl_dict import (
+    DUAL_STREAM_CONST,
+    FakeSerial,
+    MySerial,
+    get_ttl_dict,
+)
 
 
 def test_get_ttl_dict():
@@ -23,3 +29,18 @@ def test_get_ttl_dict():
     # Trigger values should be unique
     trigger_values = list(ttl_dict.values())
     assert len(trigger_values) == len(set(trigger_values))
+
+
+def test_serials():
+    """Test the FakeSerial class."""
+    some_byte = bytes([1])
+    ser = FakeSerial()
+    assert ser.write(some_byte) == some_byte
+
+    # Also covers "perf_sleep"
+    ser_waitsecs = 1
+    ser = MySerial(ser, ser_waitsecs)
+    start = time.perf_counter()
+    ser.write(some_byte)
+    stop = time.perf_counter()
+    assert (stop - start) >= ser_waitsecs

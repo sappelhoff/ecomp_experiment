@@ -8,7 +8,12 @@ However all TTL trigger codes for the "dual" task will be incremented by a const
 
 """
 
+from time import perf_counter
+
+import serial
+
 DUAL_STREAM_CONST = 100
+SER_WAITSECS = 0.001  # depending on sampling frequncy: at 1000Hz, must be >= 0.001s
 
 
 def get_ttl_dict():
@@ -34,3 +39,46 @@ def get_ttl_dict():
     ttl_dict.update(dict_to_add)
 
     return ttl_dict
+
+
+class FakeSerial:
+    """Convenience class to run the code without true serial connection."""
+
+    def write(self, byte):
+        """Take a byte and do nothing."""
+        return byte
+
+
+class MySerial:
+    """Convenience class that always resets the event marker to zero."""
+
+    def __init__(self, ser, waitsecs):
+        """Take a serial object, and a time to wait before resetting.
+
+        Parameters
+        ----------
+        ser : str | serial.Serial | FakeSerial
+            A (optionally "fake") serial port object or an address of a serial port.
+        waitsecs : float
+            Time in seconds to wait until resetting the serial port to zero.
+        """
+        if isinstance(ser, (serial.Serial, FakeSerial)):
+            self.ser = ser
+        else:
+            self.ser = serial.Serial(ser)
+        self.waitsecs = waitsecs
+        self.reset_val = bytes([0])
+
+    def write(self, byte):
+        """Take a byte, write it, and reset to zero."""
+        self.ser.write(byte)
+        perf_sleep(self.waitsecs)
+        self.ser.write(self.reset_val)
+
+
+def perf_sleep(waitsecs):
+    """Block execution of further code for `waitsecs` seconds."""
+    twaited = 0
+    start = perf_counter()
+    while twaited < waitsecs:
+        twaited = perf_counter() - start
