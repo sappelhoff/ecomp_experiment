@@ -189,7 +189,11 @@ fixation_stim_parts = [outer, horz, vert, inner]
 
 rt_clock = core.Clock()
 iti_rng = np.random.default_rng()
+state_rng = np.random.default_rng()
 for itrial, trial in enumerate(trials):
+
+    # get state for this trial
+    state = state_rng.choice([0, 1])
 
     # Show fixstim
     for stim in fixation_stim_parts:
@@ -214,7 +218,6 @@ for itrial, trial in enumerate(trials):
     )
 
     # get choice from participant
-    state = 1
     choice_stims = get_choice_stims(win, stream=stream, state=state, height=2)
     for stim in choice_stims:
         stim.draw()
@@ -234,6 +237,13 @@ for itrial, trial in enumerate(trials):
         rt = key_rt[0][1]
         valid = True
 
+    # send timeout warning if choice too slow
+    if choice == "n/a":
+        warn_stim = get_central_text_stim(win, 1, "Too slow!", (1, -1, -1))
+        for frame in range(fps):
+            warn_stim.draw()
+            win.flip()
+
     # evaluate correctness of choice
     correct, ambiguous = evaluate_trial_correct(trial, choice, stream)
 
@@ -247,6 +257,7 @@ for itrial, trial in enumerate(trials):
         iti=iti_ms,
         correct=correct,
         stream=stream,
+        state=state,
     )
     samples = dict(
         zip([f"sample{i}" for i in range(1, 9)], [sample for sample in trial])
