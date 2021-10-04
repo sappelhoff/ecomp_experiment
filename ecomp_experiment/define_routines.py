@@ -156,7 +156,9 @@ def display_trial(win, trial, digit_frames, fade_frames, digit_stims):
         stim.setOpacity(orig_opacity)
 
 
-def display_block_break(win, logfile, itrial, ntrials, blocksize):
+def display_block_break(
+    win, logfile, itrial, ntrials, blocksize, block_counter, hard_break
+):
     """Display a break screen, including feedback.
 
     Parameters
@@ -171,7 +173,21 @@ def display_block_break(win, logfile, itrial, ntrials, blocksize):
         The overall number of trials.
     blocksize : int
         How many trials fit into one block.
+    block_counter : int
+        A simple counter variable, that will be incremented by 1 and then returned.
+    hard_break : int
+        Used to determine whether to do a non-skippable block break. Done via
+        ``block_counter % hard_break == 0``, that is, do a non-skippable block after
+        every `hard_break` blocks. Hard breaks can only be skipped by pressing
+        the escape key.
+
+    Returns
+    -------
+    block_counter : int
+        A simple block counter, incremented by one compared to how it was passed
+        into this function.
     """
+    do_hard_break = block_counter % hard_break == 0
     acc_overall, acc_block = calc_accuracy(logfile, blocksize)
 
     height = 1
@@ -180,9 +196,21 @@ def display_block_break(win, logfile, itrial, ntrials, blocksize):
     text += f"Your choices in the past {blocksize} trials "
     text += f"were {acc_block}% accurate.\n\n"
     text += f"Your overall accuracy in this task so far is {acc_overall}%.\n\n"
-    text += "Press any key to continue"
+
+    if do_hard_break:
+        text += "-> Please wait for the experimenter. <-"
+    else:
+        text += "Press any key to continue."
 
     text_stim = get_central_text_stim(win, height, text, color)
     text_stim.draw()
     win.flip()
-    event.waitKeys()
+    if do_hard_break:
+        while True:
+            keys = event.waitKeys()
+            if (len(keys) == 1) and (keys[0] == "escape"):
+                break
+    else:
+        event.waitKeys()
+
+    return block_counter + 1

@@ -54,6 +54,7 @@ fixation_stim_parts = [outer, horz, vert, inner]
 rt_clock = core.Clock()
 iti_rng = np.random.default_rng()
 state_rng = np.random.default_rng()
+block_counter = 1  # start with first block
 for itrial, trial in enumerate(trials):
 
     # get state for this trial
@@ -130,7 +131,7 @@ for itrial, trial in enumerate(trials):
     save_dict(logfile, savedict)
 
     # Do a block break and display feedback
-    display_block_break(win, logfile, itrial, 2, 1)
+    block_counter = display_block_break(win, logfile, itrial, 2, 1, block_counter, 2)
 
 
 win.close()
