@@ -182,17 +182,18 @@ def calc_bonus(subj_id):
     acc = int(np.ceil(accuracy))
     # smaller than 60 = 0 € (should not happen = chance level)
     if acc < 60:
-        bonus = 0
+        bonus_euro = 0
 
     # larger than 90 = 10 € (highly unlikely to happen)
-    if acc >= 90:
-        bonus = 10
+    elif acc >= 90:
+        bonus_euro = 10
 
     # Else, map accuracy from 60 to 90 % to 0 to 10 Euros
-    cents = np.linspace(0, 1000, 30)
-    cents_earned = cents[acc - 60]
-    bonus = cents_earned / 100
+    else:
+        cents_map = np.linspace(0, 1000, 90 - 60)
+        bonus_cents = cents_map[acc - 60]
+        bonus_euro = bonus_cents / 100
 
     # We round up to next euro
-    bonus = int(np.ceil(bonus))
-    print(f"Overall correct: {accuracy}%\nBonus money: {bonus}€")
+    bonus_euro = int(np.ceil(bonus_euro))
+    print(f"Overall correct: {accuracy}%\nBonus money: {bonus_euro}€")
