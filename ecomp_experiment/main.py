@@ -22,9 +22,6 @@ from ecomp_experiment.define_settings import (
     MONITOR_NAME,
     SER_ADDRESS,
     SER_WAITSECS,
-    FakeSerial,
-    MySerial,
-    get_ttl_dict,
 )
 from ecomp_experiment.define_stimuli import (
     get_central_text_stim,
@@ -33,6 +30,7 @@ from ecomp_experiment.define_stimuli import (
     get_fixation_stim,
 )
 from ecomp_experiment.define_trials import evaluate_trial_correct, gen_trials
+from ecomp_experiment.define_ttl_dict import FakeSerial, MySerial, get_ttl_dict
 from ecomp_experiment.utils import check_framerate, map_key_to_choice, save_dict
 
 # Prepare logging
@@ -41,7 +39,9 @@ if streamdir is not None:
     logfile = streamdir / "data.tsv"
 
 # prepare the trials
-trials = gen_trials(2)
+ntrials = 2
+blocksize = 1
+trials = gen_trials(ntrials)
 
 # prepare the window
 my_monitor = monitors.Monitor(name=MONITOR_NAME)
@@ -178,7 +178,10 @@ for itrial, trial in enumerate(trials):
     save_dict(logfile, savedict)
 
     # Every nth trial, do a block break and display feedback
-    block_counter = display_block_break(win, logfile, itrial, 2, 1, block_counter, 2)
+    if (1 + itrial) % blocksize == 0:
+        block_counter = display_block_break(
+            win, logfile, itrial, ntrials, blocksize, block_counter, 2
+        )
 
 
 # Finish experiment

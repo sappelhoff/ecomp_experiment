@@ -18,8 +18,8 @@ if __name__ == "__main__":
     # Eizo Foris monitor in the EEG lab (stimulus PC)
     my_monitor = monitors.Monitor(name="eizoforis")
     my_monitor.setSizePix((2560, 1440))
-    my_monitor.setWidth(60)
-    my_monitor.setDistance(50)
+    my_monitor.setWidth(59.8)  # Height=33.8
+    my_monitor.setDistance(65)
     my_monitor.saveMon()
 
     # BENQ EX2780Q monitor (personal desktop)

@@ -16,7 +16,8 @@ MONITOR_NAME, EXPECTED_FPS = {
 # search for the "TriggerBox VirtualSerial Port (COM6)"
 # in "Ports /COM & LPT)" and enter the COM port number in the constructor.
 # If there is no TriggerBox, set ser to None
-SER = None
+SER_ADDRESS = None
+SER_WAITSECS = 0.01
 
 # Define stimuli lengths
 MIN_ITI_MS = 500
