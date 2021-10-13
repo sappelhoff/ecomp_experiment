@@ -37,3 +37,9 @@ For example, we started developing this package in 2021 in an unreleased version
 so the initial version of the package was `2021.1.0.dev0`,
 signalling that the next release (currently in development iteration 0; see `dev0`),
 will most likely be `2021.1`.
+
+## Running the experiment
+
+The experiment is intended to be run with simultaneous recording of EEG and eye-tracking data.
+
+For more information on this, please see the `EEG` and `eye-tracking` directories respectively.
