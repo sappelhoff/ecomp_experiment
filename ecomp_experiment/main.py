@@ -1,10 +1,12 @@
 """Main flow of the eComp experiment."""
 
 # %%
+import datetime
 
 import numpy as np
 from psychopy import core, event, monitors, visual
 
+from ecomp_experiment.define_eyetracking import setup_eyetracker
 from ecomp_experiment.define_routines import (
     display_block_break,
     display_instructions,
@@ -13,6 +15,7 @@ from ecomp_experiment.define_routines import (
     display_trial,
 )
 from ecomp_experiment.define_settings import (
+    CALIBRATION_TYPE,
     DIGIT_FRAMES,
     EXPECTED_FPS,
     FADE_FRAMES,
@@ -22,6 +25,7 @@ from ecomp_experiment.define_settings import (
     MONITOR_NAME,
     SER_ADDRESS,
     SER_WAITSECS,
+    TK_DUMMY_MODE,
 )
 from ecomp_experiment.define_stimuli import (
     get_central_text_stim,
@@ -32,6 +36,14 @@ from ecomp_experiment.define_stimuli import (
 from ecomp_experiment.define_trials import evaluate_trial_correct, gen_trials
 from ecomp_experiment.define_ttl_dict import FakeSerial, MySerial, get_ttl_dict
 from ecomp_experiment.utils import check_framerate, map_key_to_choice, save_dict
+
+# Prepare monitor
+my_monitor = monitors.Monitor(name=MONITOR_NAME)
+
+# Prepare eyetracking
+month_day_hour_minute = datetime.datetime.today().strftime("%m%d%H%M")
+edf_fname = f"{month_day_hour_minute}.edf"
+tk = setup_eyetracker(TK_DUMMY_MODE, my_monitor, edf_fname, CALIBRATION_TYPE)
 
 # Prepare logging
 run_type, streamdir, stream = display_survey_gui()
@@ -44,7 +56,6 @@ blocksize = 1
 trials = gen_trials(ntrials)
 
 # prepare the window
-my_monitor = monitors.Monitor(name=MONITOR_NAME)
 width, height = my_monitor.getSizePix()
 
 win = visual.Window(

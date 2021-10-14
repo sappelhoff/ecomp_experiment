@@ -15,7 +15,6 @@
 - Install Python environment as for "ecomp_experiment"
 
 """  # noqa: E501
-
 # %% imports
 import datetime
 import os
@@ -121,7 +120,7 @@ win = visual.Window(
 
 text_stim = visual.TextStim(
     win,
-    text="Press ENTER twice to calibrate the Eyetracker",
+    text="Press ENTER twice to calibrate the eye-tracker",
 )
 text_stim.draw()
 win.flip()
@@ -161,12 +160,13 @@ event.waitKeys()
 
 # stop recording
 tk.sendMessage("test ends")
+pylink.pumpDelay(100)
 tk.stopRecording()
 
 # close the EDF data file
 tk.setOfflineMode()
 tk.closeDataFile()
-pylink.pumpDelay(50)
+pylink.pumpDelay(100)
 
 # Get the EDF data from the host PC to the stimulus PC
 edf_local = os.path.join(os.path.expanduser("~"), "Desktop", edf_fname)
