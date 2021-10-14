@@ -17,6 +17,7 @@ def test_dummy_eyelink():
     msg_rec = tk.sendMessage(msg_send)
     assert msg_rec == msg_send
 
-    start_eye_recording(tk)
+    error = start_eye_recording(tk)
+    assert error == 0
 
     stop_eye_recording(tk, 1, 2)

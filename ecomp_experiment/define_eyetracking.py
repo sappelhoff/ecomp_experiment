@@ -4,9 +4,6 @@ See also the eye-tracking directory for more information.
 """
 
 
-from psychopy import event, visual
-
-
 class DummyEyeLink:
     """Convenience class to run the code without true EyeLink connection."""
 
@@ -69,6 +66,7 @@ def setup_eyetracker(dummy_mode, mon, edf_fname, calibration_type):
     # Else, we need to import some libraries
     import pylink
     from EyeLinkCoreGraphicsPsychoPy import EyeLinkCoreGraphicsPsychoPy
+    from psychopy import event, visual
 
     # And start the setup
     scn_w, scn_h = mon.getSizePix()
