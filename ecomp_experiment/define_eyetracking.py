@@ -10,6 +10,34 @@ from psychopy import event, visual
 class DummyEyeLink:
     """Convenience class to run the code without true EyeLink connection."""
 
+    def sendMessage(self, msg):
+        """Take a message string and return it (do nothing)."""
+        return msg
+
+
+def start_eye_recording(tk):
+    """Start eye-tracking."""
+    if isinstance(tk, DummyEyeLink):
+        return 0
+    error = tk.startRecording(1, 1, 1, 1)
+    return error
+
+
+def stop_eye_recording(tk, edf_fname, edf_fname_local):
+    """Stop eye-tracking and transfer an EDF file to local PC."""
+    if isinstance(tk, DummyEyeLink):
+        return
+    import pylink
+
+    pylink.pumpDelay(100)
+    tk.stopRecording()
+    tk.setOfflineMode()
+    tk.closeDataFile()
+    pylink.pumpDelay(100)
+    tk.receiveDataFile(edf_fname, edf_fname_local)
+    tk.close()
+    pylink.closeGraphics()
+
 
 def setup_eyetracker(dummy_mode, mon, edf_fname, calibration_type):
     """Do setup and calibrate the EyeLink.
