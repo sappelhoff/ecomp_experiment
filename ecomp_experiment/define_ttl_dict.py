@@ -13,7 +13,12 @@ from time import perf_counter
 import serial
 
 DUAL_STREAM_CONST = 100
-SER_WAITSECS = 0.001  # depending on sampling frequncy: at 1000Hz, must be >= 0.001s
+
+
+def send_trigger(ser, tk, byte):
+    """Send an event code to serial and eye-tracker."""
+    ser.write(byte)
+    tk.sendMessage(f"{ord(byte)}")
 
 
 def get_ttl_dict():
@@ -27,8 +32,14 @@ def get_ttl_dict():
     ttl_dict["single_begin_experiment"] = bytes([1])
     ttl_dict["single_end_experiment"] = bytes([2])
 
-    # Indication when a new trial is started
+    # New trial starts
     ttl_dict["single_new_trl"] = bytes([3])
+
+    # first fixstim offset in trial
+    ttl_dict["single_fixstim_offset"] = bytes([3])
+
+    # Show a digit
+    ttl_dict["single_fixstim_offset"] = bytes([4])
 
     # Generate the triggers for the "dual" task
     dict_to_add = {}

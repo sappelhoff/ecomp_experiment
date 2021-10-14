@@ -11,6 +11,7 @@ from psychopy import core, event, gui
 
 import ecomp_experiment
 from ecomp_experiment.define_stimuli import get_central_text_stim
+from ecomp_experiment.define_ttl_dict import send_trigger
 from ecomp_experiment.utils import calc_accuracy
 
 
@@ -202,7 +203,7 @@ def display_survey_gui():
     return run_type, streamdir, stream
 
 
-def display_iti(win, min_ms, max_ms, fps, rng):
+def display_iti(win, min_ms, max_ms, fps, rng, trigger_kwargs):
     """Display and return an inter-trial-interval.
 
     Parameters
@@ -216,6 +217,9 @@ def display_iti(win, min_ms, max_ms, fps, rng):
     rng : np.random.Generator
         The random number generator object based on which to
         generate the inter-trial-intervals.
+    trigger_kwargs : dict
+        Contains keys ser, tk, and byte. To be passed to the send_trigger
+        function.
 
     Returns
     -------
@@ -227,6 +231,7 @@ def display_iti(win, min_ms, max_ms, fps, rng):
     high = int(np.ceil(max_ms / 1000 * fps))
     iti_frames = rng.integers(low, high + 1)
 
+    win.callOnFlip(send_trigger, **trigger_kwargs)
     for frame in range(iti_frames):
         win.flip()
 
@@ -234,13 +239,14 @@ def display_iti(win, min_ms, max_ms, fps, rng):
     return iti_ms
 
 
-def display_trial(win, trial, digit_frames, fade_frames, digit_stims):
+def display_trial(win, trial, digit_frames, fade_frames, digit_stims, trigger_kwargs):
     """Display a trial on a window."""
     for digit in trial:
 
         stim = digit_stims[digit]
 
         # Draw digit
+        win.callOnFlip(send_trigger, **trigger_kwargs)
         for frame in range(digit_frames):
             stim.draw()
             win.flip()

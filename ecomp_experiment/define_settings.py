@@ -17,7 +17,7 @@ MONITOR_NAME, EXPECTED_FPS = {
 # in "Ports /COM & LPT)" and enter the COM port number in the constructor.
 # If there is no TriggerBox, set ser to None
 SER_ADDRESS = None
-SER_WAITSECS = 0.01
+SER_WAITSECS = 0.01  # depending on sampling frequncy: at 1000Hz, must be >= 0.001s
 
 # Define stimuli lengths
 MIN_ITI_MS = 500

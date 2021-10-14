@@ -38,7 +38,12 @@ from ecomp_experiment.define_stimuli import (
     get_fixation_stim,
 )
 from ecomp_experiment.define_trials import evaluate_trial_correct, gen_trials
-from ecomp_experiment.define_ttl_dict import FakeSerial, MySerial, get_ttl_dict
+from ecomp_experiment.define_ttl_dict import (
+    FakeSerial,
+    MySerial,
+    get_ttl_dict,
+    send_trigger,
+)
 from ecomp_experiment.utils import check_framerate, map_key_to_choice, save_dict
 
 # Prepare logging
@@ -49,10 +54,11 @@ if streamdir is not None:
 # Prepare monitor
 my_monitor = monitors.Monitor(name=MONITOR_NAME)
 
-# Prepare eyetracking
+# Prepare eyetracking (only track eyes in "experiment" mode)
 month_day_hour_minute = datetime.datetime.today().strftime("%m%d%H%M")
 edf_fname = f"{month_day_hour_minute}.edf"
-tk = setup_eyetracker(TK_DUMMY_MODE, my_monitor, edf_fname, CALIBRATION_TYPE)
+tk_dummy_mode = TK_DUMMY_MODE if run_type == "experiment" else False
+tk = setup_eyetracker(tk_dummy_mode, my_monitor, edf_fname, CALIBRATION_TYPE)
 
 # prepare the trials
 ntrials = 2
@@ -85,6 +91,10 @@ digit_stims = get_digit_stims(win, height=5)
 outer, inner, horz, vert = get_fixation_stim(win)
 fixation_stim_parts = [outer, horz, vert, inner]
 
+# Start eye-tracking
+error = start_eye_recording(tk)
+assert error == 0
+
 # Setup serial port
 ttl_dict = get_ttl_dict()
 
@@ -96,11 +106,8 @@ else:
 
 # Start experiment
 # ----------------
-error = start_eye_recording(tk)
-assert error == 0
-value = ttl_dict[f"{stream}_begin_experiment"]
-ser_port.write(value)
-tk.sendMessage(f"{ord(value)}")
+trigger_kwargs = dict(ser=ser_port, tk=tk, byte=ttl_dict[f"{stream}_begin_experiment"])
+send_trigger(**trigger_kwargs)
 
 rt_clock = core.Clock()
 iti_rng = np.random.default_rng()
@@ -116,21 +123,27 @@ for itrial, trial in enumerate(trials):
         stim.setAutoDraw(True)
 
     # jittered inter-trial-interval
-    iti_ms = display_iti(win, MIN_ITI_MS, MAX_ITI_MS, fps, iti_rng)
+    trigger_kwargs["byte"] = ttl_dict[f"{stream}_new_trl"]
+    iti_ms = display_iti(win, MIN_ITI_MS, MAX_ITI_MS, fps, iti_rng, trigger_kwargs)
 
     # 500ms before first sample onset, remove fixstim
     for stim in fixation_stim_parts:
         stim.setAutoDraw(False)
+
+    trigger_kwargs["byte"] = ttl_dict[f"{stream}_fixstim_offset"]
+    win.callOnFlip(send_trigger, trigger_kwargs)
     for frame in range(int(np.ceil(fps / 2))):
         win.flip()
 
     # show samples
+    trigger_kwargs["byte"] = ttl_dict[f"{stream}_digit"]
     display_trial(
         win,
         trial,
         digit_frames=DIGIT_FRAMES,
         fade_frames=FADE_FRAMES,
         digit_stims=digit_stims,
+        trigger_kwargs=trigger_kwargs,
     )
 
     # get choice from participant
@@ -203,9 +216,7 @@ for itrial, trial in enumerate(trials):
 
 
 # Finish experiment
-value = ttl_dict[f"{stream}_end_experiment"]
-ser_port.write(value)
-tk.sendMessage(f"{ord(value)}")
+send_trigger(ser_port, tk, ttl_dict[f"{stream}_end_experiment"])
 
 # Stop eye-tracking and get the data
 edf_fname_local = str(streamdir / "eyedata.edf")
