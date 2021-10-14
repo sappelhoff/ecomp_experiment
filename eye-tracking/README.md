@@ -1,5 +1,7 @@
 # eye-tracking
 
+## General information
+
 **NOTE: All eye-tracking is intended to run only on Windows 10!**
 
 The experiment can also be run without eye-tracking, see `define_settings.py`.
@@ -47,6 +49,10 @@ In case the pylink software is not available via the SR-Research package index,
 you can obtain it after installing the EyeLink Developers Kit.
 Please refer to the manuals.
 
+## Python "try out script"
+
+See `try_eyelink.py`.
+
 ## Recommendations and hints
 
 Page numbers refer to the EyeLink Manual.
@@ -60,6 +66,7 @@ Page numbers refer to the EyeLink Manual.
 - Sticker should be on the forehead between the two eyes (section 3.2.3)
 - If CR signal not reliable, or pupil threshold >> 120, set illuminator to 75% (p.69)
 - You can edit the EyeLink host PC settings via the stimulus computer's browser. Type in this address: `100.1.1.1` (p.12)
+- Look up any confusing `sendCommand` calls in the INI files you can find on the EyeLink host PC.
 
 ## Glossary
 
