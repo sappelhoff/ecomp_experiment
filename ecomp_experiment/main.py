@@ -111,6 +111,7 @@ event.waitKeys()
 
 trigger_kwargs["byte"] = ttl_dict[f"{stream}_begin_experiment"]
 send_trigger(**trigger_kwargs)
+core.wait(1)
 
 rt_clock = core.Clock()
 iti_rng = np.random.default_rng()
@@ -170,6 +171,7 @@ for itrial, trial in enumerate(trials):
     if key_rt is None:
         trigger_kwargs["byte"] = ttl_dict[f"{stream}_response_timeout"]
         send_trigger(**trigger_kwargs)
+        key = "n/a"
         choice = "n/a"
         rt = "n/a"
         valid = False
@@ -198,9 +200,9 @@ for itrial, trial in enumerate(trials):
             win.flip()
 
     # send timeout warning *if choice too slow*
-    trigger_kwargs["byte"] = ttl_dict[f"{stream}_feedback_timeout"]
-    win.callOnFlip(send_trigger, **trigger_kwargs)
     if choice == "n/a":
+        trigger_kwargs["byte"] = ttl_dict[f"{stream}_feedback_timeout"]
+        win.callOnFlip(send_trigger, **trigger_kwargs)
         warn_stim = get_central_text_stim(win, 1, "Too slow!", (1, -1, -1))
         for frame in range(fps):
             warn_stim.draw()
@@ -209,6 +211,7 @@ for itrial, trial in enumerate(trials):
     # Save trial data
     savedict = dict(
         trial=itrial,
+        key=key,
         choice=choice,
         ambiguous=ambiguous,
         rt=rt,
@@ -240,12 +243,16 @@ for itrial, trial in enumerate(trials):
 
 
 # Finish experiment
-send_trigger(ser_port, tk, ttl_dict[f"{stream}_end_experiment"])
+core.wait(1)
+trigger_kwargs["byte"] = ttl_dict[f"{stream}_end_experiment"]
+send_trigger(**trigger_kwargs)
+
 
 # Stop eye-tracking and get the data
 edf_fname_local = str(streamdir / "eyedata.edf")
 stop_eye_recording(tk, edf_fname, edf_fname_local)
 
 # Close and exit
+ser_port.ser.close()
 win.close()
 core.quit()

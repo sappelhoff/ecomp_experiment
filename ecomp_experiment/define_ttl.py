@@ -96,6 +96,10 @@ class FakeSerial:
         """Take a byte and do nothing."""
         return byte
 
+    def close(self):
+        """Do nothing."""
+        return
+
 
 class MySerial:
     """Convenience class that always resets the event marker to zero."""
@@ -113,7 +117,9 @@ class MySerial:
         if isinstance(ser, (serial.Serial, FakeSerial)):
             self.ser = ser
         else:
-            self.ser = serial.Serial(ser)
+            self.ser = serial.Serial(
+                port=ser, baudrate=115200, bytesize=serial.EIGHTBITS
+            )
         self.waitsecs = waitsecs
         self.reset_val = bytes([0])
 
