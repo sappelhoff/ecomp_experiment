@@ -83,10 +83,6 @@ tk.sendCommand(f"screen_pixel_coords = 0 0 {scn_w - 1} {scn_h - 1}")
 # (see Data Viewer User Manual, Section 7)
 tk.sendMessage(f"DISPLAY_COORDS = 0 0 {scn_w - 1} {scn_h - 1}")
 
-# add personalized data file header (preamble text), should start with RECORDED BY
-my_preamble = "RECORDED BY try_eyelink.py"
-tk.sendCommand(f"add_file_preamble_text {my_preamble}")
-
 # data type used to compute velocity for parsing of eye movements during recording
 # should be GAZE
 tk.sendCommand("recording_parse_type = GAZE")
@@ -124,7 +120,7 @@ text_stim = visual.TextStim(
 )
 text_stim.draw()
 win.flip()
-event.waitkeys()
+event.waitKeys()
 
 # open graphics environment
 genv = EyeLinkCoreGraphicsPsychoPy(tk, win)
@@ -141,7 +137,8 @@ if not tk_dummy_mode:
 text_stim.text = "Calibration done. Press any key to start recording."
 text_stim.draw()
 win.flip()
-event.waitkeys()
+event.waitKeys()
+win.flip()
 
 # %% Record data for a bit
 
