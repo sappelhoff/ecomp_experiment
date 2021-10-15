@@ -36,10 +36,37 @@ def get_ttl_dict():
     ttl_dict["single_new_trl"] = bytes([3])
 
     # first fixstim offset in trial
-    ttl_dict["single_fixstim_offset"] = bytes([3])
+    ttl_dict["single_fixstim_offset"] = bytes([4])
 
     # Show a digit
-    ttl_dict["single_fixstim_offset"] = bytes([4])
+    ttl_dict["single_digit_1"] = bytes([11])
+    ttl_dict["single_digit_2"] = bytes([12])
+    ttl_dict["single_digit_3"] = bytes([13])
+    ttl_dict["single_digit_4"] = bytes([14])
+    ttl_dict["single_digit_5"] = bytes([15])
+    ttl_dict["single_digit_6"] = bytes([16])
+    ttl_dict["single_digit_7"] = bytes([17])
+    ttl_dict["single_digit_8"] = bytes([18])
+    ttl_dict["single_digit_9"] = bytes([19])
+
+    # prompt a response
+    ttl_dict["single_response_prompt"] = bytes([5])
+
+    # participant took to long to respond
+    ttl_dict["single_response_timeout"] = bytes([6])
+
+    # valid participant respones
+    ttl_dict["single_response_lower"] = bytes([7])
+    ttl_dict["single_response_higher"] = bytes([8])
+    ttl_dict["single_response_blue"] = bytes([9])
+    ttl_dict["single_response_red"] = bytes([10])
+
+    # feedback: timeout warning
+    ttl_dict["single_feedback_timeout"] = bytes([20])
+
+    # feedback: block break
+    ttl_dict["single_feedback_break_begin"] = bytes([21])
+    ttl_dict["single_feedback_break_end"] = bytes([22])
 
     # Generate the triggers for the "dual" task
     dict_to_add = {}

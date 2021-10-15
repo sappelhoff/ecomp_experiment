@@ -19,6 +19,7 @@ from ecomp_experiment.define_routines import (
     display_trial,
 )
 from ecomp_experiment.define_settings import (
+    BLOCKSIZE,
     CALIBRATION_TYPE,
     DIGIT_FRAMES,
     EXPECTED_FPS,
@@ -27,6 +28,7 @@ from ecomp_experiment.define_settings import (
     MAXWAIT_RESPONSE_S,
     MIN_ITI_MS,
     MONITOR_NAME,
+    NTRIALS,
     SER_ADDRESS,
     SER_WAITSECS,
     TK_DUMMY_MODE,
@@ -61,9 +63,7 @@ tk_dummy_mode = TK_DUMMY_MODE if run_type == "experiment" else False
 tk = setup_eyetracker(tk_dummy_mode, my_monitor, edf_fname, CALIBRATION_TYPE)
 
 # prepare the trials
-ntrials = 2
-blocksize = 1
-trials = gen_trials(ntrials)
+trials = gen_trials(NTRIALS)
 
 # prepare the window
 width, height = my_monitor.getSizePix()
@@ -104,9 +104,11 @@ if SER_ADDRESS is None:
 else:
     ser_port = MySerial(SER_ADDRESS, waitsecs=SER_WAITSECS)
 
+trigger_kwargs = dict(ser=ser_port, tk=tk, byte=bytes([0]))
+
 # Start experiment
 # ----------------
-trigger_kwargs = dict(ser=ser_port, tk=tk, byte=ttl_dict[f"{stream}_begin_experiment"])
+trigger_kwargs["byte"] = ttl_dict[f"{stream}_begin_experiment"]
 send_trigger(**trigger_kwargs)
 
 rt_clock = core.Clock()
@@ -136,14 +138,17 @@ for itrial, trial in enumerate(trials):
         win.flip()
 
     # show samples
-    trigger_kwargs["byte"] = ttl_dict[f"{stream}_digit"]
+    trigger_kwargs_list = [
+        dict(ser=ser_port, tk=tk, byte=ttl_dict[f"{stream}_digit_{digit}"])
+        for digit in trial
+    ]
     display_trial(
         win,
         trial,
         digit_frames=DIGIT_FRAMES,
         fade_frames=FADE_FRAMES,
         digit_stims=digit_stims,
-        trigger_kwargs=trigger_kwargs,
+        trigger_kwargs_list=trigger_kwargs_list,
     )
 
     # get choice from participant
@@ -151,6 +156,8 @@ for itrial, trial in enumerate(trials):
     for stim in choice_stims:
         stim.draw()
 
+    trigger_kwargs["byte"] = ttl_dict[f"{stream}_response_prompt"]
+    win.callOnFlip(send_trigger, trigger_kwargs)
     rt_clock.reset()
     win.flip()
     key_rt = event.waitKeys(
@@ -160,6 +167,8 @@ for itrial, trial in enumerate(trials):
     )
 
     if key_rt is None:
+        trigger_kwargs["byte"] = ttl_dict[f"{stream}_response_timeout"]
+        send_trigger(**trigger_kwargs)
         choice = "n/a"
         rt = "n/a"
         valid = False
@@ -170,13 +179,15 @@ for itrial, trial in enumerate(trials):
             print("\n\nYou pressed the 'escape' key, quitting now ...")
             core.quit()
         choice = map_key_to_choice(key, state, stream)
+        trigger_kwargs["byte"] = ttl_dict[f"{stream}_response_{choice}"]
+        send_trigger(**trigger_kwargs)
         rt = key_rt[0][1]
         valid = True
 
     # evaluate correctness of choice
     correct, ambiguous = evaluate_trial_correct(trial, choice, stream)
 
-    # send feedback *if training trials*
+    # send feedback *if training trials* (no TTL trigger needed in training)
     if (run_type == "training") and (choice != "n/a"):
         correct_str = "correct" if correct else "wrong"
         msg = f"Your choice ({choice}) was {correct_str}."
@@ -186,6 +197,8 @@ for itrial, trial in enumerate(trials):
             win.flip()
 
     # send timeout warning *if choice too slow*
+    trigger_kwargs["byte"] = ttl_dict[f"{stream}_feedback_timeout"]
+    win.callOnFlip(send_trigger, trigger_kwargs)
     if choice == "n/a":
         warn_stim = get_central_text_stim(win, 1, "Too slow!", (1, -1, -1))
         for frame in range(fps):
@@ -209,10 +222,20 @@ for itrial, trial in enumerate(trials):
     save_dict(logfile, savedict)
 
     # Every nth trial, do a block break and display feedback
-    if (1 + itrial) % blocksize == 0:
+    if (1 + itrial) % BLOCKSIZE == 0:
+        trigger_kwargs["byte"] = ttl_dict[f"{stream}_feedback_break_begin"]
         block_counter = display_block_break(
-            win, logfile, itrial, ntrials, blocksize, block_counter, 2
+            win,
+            logfile,
+            itrial,
+            NTRIALS,
+            BLOCKSIZE,
+            block_counter,
+            hard_break=2,
+            trigger_kwargs=trigger_kwargs,
         )
+        trigger_kwargs["byte"] = ttl_dict[f"{stream}_feedback_break_end"]
+        send_trigger(**trigger_kwargs)
 
 
 # Finish experiment

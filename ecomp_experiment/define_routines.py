@@ -225,7 +225,6 @@ def display_iti(win, min_ms, max_ms, fps, rng, trigger_kwargs):
     -------
     iti_ms : int
         the inter-trial-interval in milliseconds.
-
     """
     low = int(np.floor(min_ms / 1000 * fps))
     high = int(np.ceil(max_ms / 1000 * fps))
@@ -239,11 +238,28 @@ def display_iti(win, min_ms, max_ms, fps, rng, trigger_kwargs):
     return iti_ms
 
 
-def display_trial(win, trial, digit_frames, fade_frames, digit_stims, trigger_kwargs):
-    """Display a trial on a window."""
-    for digit in trial:
+def display_trial(
+    win, trial, digit_frames, fade_frames, digit_stims, trigger_kwargs_list
+):
+    """Display a trial on a window.
+
+    Parameters
+    ----------
+    win : psychopy.visual.Window
+        The psychopy window on which to draw the stimuli.
+    trial : np.ndarray, shape(8,)
+        The digit samples in this trial (from 1 to 9).
+    digit_frames, fade_frames : int
+        The number of frames (win flips) to show a digit, and to fade a digit.
+    digit_stims : dict
+        Contains the psychopy stimuli for the digits.
+    trigger_kwargs_list : list of dicts
+        Each entry in the list corresponds to a digit in the trial (in order!).
+    """
+    for idigit, digit in enumerate(trial):
 
         stim = digit_stims[digit]
+        trigger_kwargs = trigger_kwargs_list[idigit]
 
         # Draw digit
         win.callOnFlip(send_trigger, **trigger_kwargs)
@@ -264,7 +280,7 @@ def display_trial(win, trial, digit_frames, fade_frames, digit_stims, trigger_kw
 
 
 def display_block_break(
-    win, logfile, itrial, ntrials, blocksize, block_counter, hard_break
+    win, logfile, itrial, ntrials, blocksize, block_counter, hard_break, trigger_kwargs
 ):
     """Display a break screen, including feedback.
 
@@ -287,6 +303,9 @@ def display_block_break(
         ``block_counter % hard_break == 0``, that is, do a non-skippable block after
         every `hard_break` blocks. Hard breaks can only be skipped by pressing
         the escape key.
+    trigger_kwargs : dict
+        Contains keys ser, tk, and byte. To be passed to the send_trigger
+        function.
 
     Returns
     -------
@@ -311,6 +330,7 @@ def display_block_break(
 
     text_stim = get_central_text_stim(win, height, text, color)
     text_stim.draw()
+    win.callOnFlip(send_trigger, **trigger_kwargs)
     win.flip()
     if do_hard_break:
         # only pressing escape works
