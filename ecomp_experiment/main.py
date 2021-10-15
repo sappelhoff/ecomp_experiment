@@ -24,6 +24,7 @@ from ecomp_experiment.define_settings import (
     DIGIT_FRAMES,
     EXPECTED_FPS,
     FADE_FRAMES,
+    FULLSCR,
     MAX_ITI_MS,
     MAXWAIT_RESPONSE_S,
     MIN_ITI_MS,
@@ -65,7 +66,7 @@ width, height = my_monitor.getSizePix()
 
 win = visual.Window(
     color=(-1, -1, -1),
-    fullscr=True,
+    fullscr=FULLSCR,
     monitor=my_monitor,
     units="deg",
     winType="pyglet",
@@ -103,6 +104,11 @@ trigger_kwargs = dict(ser=ser_port, tk=tk, byte=bytes([0]))
 
 # Start experiment
 # ----------------
+start_stim = get_central_text_stim(win, 1, "Press any key to start.", (1, 1, 1))
+start_stim.draw()
+win.flip()
+event.waitKeys()
+
 trigger_kwargs["byte"] = ttl_dict[f"{stream}_begin_experiment"]
 send_trigger(**trigger_kwargs)
 
@@ -128,13 +134,13 @@ for itrial, trial in enumerate(trials):
         stim.setAutoDraw(False)
 
     trigger_kwargs["byte"] = ttl_dict[f"{stream}_fixstim_offset"]
-    win.callOnFlip(send_trigger, trigger_kwargs)
+    win.callOnFlip(send_trigger, **trigger_kwargs)
     for frame in range(int(np.ceil(fps / 2))):
         win.flip()
 
     # show samples
     trigger_kwargs_list = [
-        dict(ser=ser_port, tk=tk, byte=ttl_dict[f"{stream}_digit_{digit}"])
+        dict(ser=ser_port, tk=tk, byte=ttl_dict[f"{stream}_digit_{int(digit)}"])
         for digit in trial
     ]
     display_trial(
@@ -152,7 +158,7 @@ for itrial, trial in enumerate(trials):
         stim.draw()
 
     trigger_kwargs["byte"] = ttl_dict[f"{stream}_response_prompt"]
-    win.callOnFlip(send_trigger, trigger_kwargs)
+    win.callOnFlip(send_trigger, **trigger_kwargs)
     rt_clock.reset()
     win.flip()
     key_rt = event.waitKeys(
@@ -193,7 +199,7 @@ for itrial, trial in enumerate(trials):
 
     # send timeout warning *if choice too slow*
     trigger_kwargs["byte"] = ttl_dict[f"{stream}_feedback_timeout"]
-    win.callOnFlip(send_trigger, trigger_kwargs)
+    win.callOnFlip(send_trigger, **trigger_kwargs)
     if choice == "n/a":
         warn_stim = get_central_text_stim(win, 1, "Too slow!", (1, -1, -1))
         for frame in range(fps):

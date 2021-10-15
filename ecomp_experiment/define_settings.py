@@ -27,9 +27,10 @@ FADE_FRAMES = int(EXPECTED_FPS / 12)
 MAXWAIT_RESPONSE_S = 3
 
 # Eye-tracker settings
-TK_DUMMY_MODE = True
+TK_DUMMY_MODE = False
 CALIBRATION_TYPE = "HV5"
 
 # Experiment settings
 NTRIALS = 2
 BLOCKSIZE = 1
+FULLSCR = False

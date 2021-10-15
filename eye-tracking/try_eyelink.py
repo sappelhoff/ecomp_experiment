@@ -67,6 +67,7 @@ month_day_hour_minute = datetime.datetime.today().strftime("%m%d%H%M")
 edf_fname = f"{month_day_hour_minute}.edf"
 assert (len(edf_fname) - len(".edf")) <= 8
 tk.openDataFile(edf_fname)
+tk.sendCommand("add_file_preamble_text 'RECORDED BY try_eyelink.py'")
 
 # %% Prepare some settings for the EyeLink
 

@@ -3,6 +3,8 @@
 See also the eye-tracking directory for more information.
 """
 
+from ecomp_experiment.define_settings import FULLSCR
+
 
 class DummyEyeLink:
     """Convenience class to run the code without true EyeLink connection."""
@@ -83,13 +85,13 @@ def setup_eyetracker(dummy_mode, mon, edf_fname, calibration_type):
 
     assert (len(edf_fname) - len(".edf")) <= 8
     tk.openDataFile(edf_fname)
+    tk.sendCommand("add_file_preamble_text 'RECORDED BY eComp'")
 
     tk.setOfflineMode()
 
     tk.sendMessage(f"DISPLAY_COORDS = 0 0 {scn_w - 1} {scn_h - 1}")
     tk.sendCommand("sample_rate 1000")
     tk.sendCommand(f"screen_pixel_coords = 0 0 {scn_w - 1} {scn_h - 1}")
-    tk.sendCommand("add_file_preamble_text eComp")
     tk.sendCommand("recording_parse_type = GAZE")
     tk.sendCommand(f"calibration_type = {calibration_type}")
     tk.sendCommand("calibration_area_proportion 0.7 0.7")
@@ -103,7 +105,7 @@ def setup_eyetracker(dummy_mode, mon, edf_fname, calibration_type):
     # Do calibration
     win = visual.Window(
         size=(scn_w, scn_h),
-        fullscr=False,
+        fullscr=FULLSCR,
         monitor=mon,
         winType="pyglet",
         units="pix",
@@ -115,7 +117,7 @@ def setup_eyetracker(dummy_mode, mon, edf_fname, calibration_type):
     )
     text_stim.draw()
     win.flip()
-    event.waitkeys()
+    event.waitKeys()
 
     genv = EyeLinkCoreGraphicsPsychoPy(tk, win)
     pylink.openGraphicsEx(genv)
@@ -125,5 +127,6 @@ def setup_eyetracker(dummy_mode, mon, edf_fname, calibration_type):
     text_stim.text = "Calibration done. Press any key to continue."
     text_stim.draw()
     win.flip()
-    event.waitkeys()
+    event.waitKeys()
+    win.close()
     return tk
