@@ -40,12 +40,7 @@ from ecomp_experiment.define_stimuli import (
     get_fixation_stim,
 )
 from ecomp_experiment.define_trials import evaluate_trial_correct, gen_trials
-from ecomp_experiment.define_ttl_dict import (
-    FakeSerial,
-    MySerial,
-    get_ttl_dict,
-    send_trigger,
-)
+from ecomp_experiment.define_ttl import FakeSerial, MySerial, get_ttl_dict, send_trigger
 from ecomp_experiment.utils import check_framerate, map_key_to_choice, save_dict
 
 # Prepare logging

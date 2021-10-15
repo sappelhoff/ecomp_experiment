@@ -1,7 +1,7 @@
 """Test the TTL trigger script for basic integrity."""
 import time
 
-from ecomp_experiment.define_ttl_dict import (
+from ecomp_experiment.define_ttl import (
     DUAL_STREAM_CONST,
     FakeSerial,
     MySerial,

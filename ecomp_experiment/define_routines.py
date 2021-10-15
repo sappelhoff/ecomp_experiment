@@ -11,7 +11,7 @@ from psychopy import core, event, gui
 
 import ecomp_experiment
 from ecomp_experiment.define_stimuli import get_central_text_stim
-from ecomp_experiment.define_ttl_dict import send_trigger
+from ecomp_experiment.define_ttl import send_trigger
 from ecomp_experiment.utils import calc_accuracy
 
 
