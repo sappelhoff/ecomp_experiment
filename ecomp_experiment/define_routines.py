@@ -4,6 +4,7 @@
 import datetime
 import json
 import os
+import shutil
 from pathlib import Path
 
 import numpy as np
@@ -122,6 +123,8 @@ def display_survey_gui():
         participant. Will be None if `run_type` is "instructions".
     stream : {"single", "dual"}
         The stream to run in the experiment.
+    substr : str
+        The subject identifier string.
     """
     # Check for real experiment or just a test run
     survey_gui1 = gui.Dlg(title="eComp Experiment")
@@ -163,18 +166,20 @@ def display_survey_gui():
     assert data_dir.exists(), "Sure you are in the right directory?"
 
     # Create subj dir
-    substr = (
-        "{:02}".format(survey_data2[0])
-        if isinstance(survey_data2[0], int)
-        else survey_data2[0]
-    )
+    subid = survey_data2[0]
+    substr = "{:02}".format(subid) if isinstance(subid, int) else subid
     subjdir = data_dir / f"sub-{substr}"
     streamdir = subjdir / stream
 
-    # Do not risk overwriting data
-    if streamdir.exists() and run_type == "experiment":
-        msg = f"Stream directory {stream} for subject ID {substr} already exists."
-        raise RuntimeError(msg)
+    # Do not risk overwriting experiment data
+    if streamdir.exists():
+        if run_type == "experiment":
+            msg = f"Stream directory {stream} for subject ID {substr} already exists."
+            raise RuntimeError(msg)
+        else:
+            assert run_type in ["training", "test"]
+            print("Found previous test/training data. Removing it ...")
+            shutil.rmtree(streamdir)
 
     os.makedirs(subjdir, exist_ok=True)
     os.makedirs(streamdir, exist_ok=True)
@@ -199,7 +204,7 @@ def display_survey_gui():
     with open(fpath, "w") as fout:
         json.dump(data, fout, indent=4, ensure_ascii=False, sort_keys=True)
 
-    return run_type, streamdir, stream
+    return run_type, streamdir, stream, substr
 
 
 def display_iti(win, min_ms, max_ms, fps, rng, trigger_kwargs):

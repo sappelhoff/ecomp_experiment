@@ -47,9 +47,9 @@ from ecomp_experiment.define_ttl import FakeSerial, MySerial, get_ttl_dict, send
 from ecomp_experiment.utils import check_framerate, map_key_to_choice, save_dict
 
 # Prepare logging
-run_type, streamdir, stream = display_survey_gui()
+run_type, streamdir, stream, substr = display_survey_gui()
 if streamdir is not None:
-    logfile = streamdir / "data.tsv"
+    logfile = streamdir / f"sub-{substr}_stream-{stream}_beh.tsv"
 
 # Prepare monitor
 my_monitor = monitors.Monitor(name=MONITOR_NAME)
@@ -187,6 +187,7 @@ for itrial, trial in enumerate(trials):
         key = key_rt[0][0]
         if key == "escape":
             print("\n\nYou pressed the 'escape' key, quitting now ...")
+            win.close()
             core.quit()
         choice = map_key_to_choice(key, state, stream)
         trigger_kwargs["byte"] = ttl_dict[f"{stream}_response_{choice}"]
@@ -228,7 +229,7 @@ for itrial, trial in enumerate(trials):
         stream=stream,
         state=state,
     )
-    samples = dict([(f"sample{i+1}", sample) for i, sample in enumerate(trial)])
+    samples = dict([(f"sample{i+1}", int(sample)) for i, sample in enumerate(trial)])
     savedict.update(samples)
     save_dict(logfile, savedict)
 
@@ -256,7 +257,7 @@ send_trigger(**trigger_kwargs)
 
 
 # Stop eye-tracking and get the data
-edf_fname_local = str(streamdir / "eyedata.edf")
+edf_fname_local = str(streamdir / f"sub-{substr}_stream-{stream}_eyetrack.edf")
 stop_eye_recording(tk, edf_fname, edf_fname_local)
 
 # Close and exit
