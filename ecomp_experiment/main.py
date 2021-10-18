@@ -22,6 +22,7 @@ from ecomp_experiment.define_settings import (
     BLOCKSIZE,
     CALIBRATION_TYPE,
     DIGIT_FRAMES,
+    DIGIT_HEIGHT_DVA,
     EXPECTED_FPS,
     FADE_FRAMES,
     FULLSCR,
@@ -29,6 +30,7 @@ from ecomp_experiment.define_settings import (
     MAXWAIT_RESPONSE_S,
     MIN_ITI_MS,
     MONITOR_NAME,
+    NSAMPLES,
     NTRIALS,
     SER_ADDRESS,
     SER_WAITSECS,
@@ -59,7 +61,7 @@ tk_dummy_mode = TK_DUMMY_MODE if run_type == "experiment" else True
 tk = setup_eyetracker(tk_dummy_mode, my_monitor, edf_fname, CALIBRATION_TYPE)
 
 # prepare the trials
-trials = gen_trials(NTRIALS)
+trials = gen_trials(NTRIALS, NSAMPLES)
 
 # prepare the window
 width, height = my_monitor.getSizePix()
@@ -82,14 +84,14 @@ if run_type == "instructions":
     core.quit()
 
 # get stimuli
-digit_stims = get_digit_stims(win, height=5)
+digit_stims = get_digit_stims(win, height=DIGIT_HEIGHT_DVA)
 
 outer, inner, horz, vert = get_fixation_stim(win)
 fixation_stim_parts = [outer, horz, vert, inner]
 
 # Start eye-tracking
 error = start_eye_recording(tk)
-assert error == 0
+assert error == 0, "Problem during eye-tracker setup."
 
 # Setup serial port
 ttl_dict = get_ttl_dict()
@@ -108,6 +110,11 @@ start_stim = get_central_text_stim(win, 1, "Press any key to start.", (1, 1, 1))
 start_stim.draw()
 win.flip()
 event.waitKeys()
+
+# Show fixstim
+for stim in fixation_stim_parts:
+    stim.setAutoDraw(True)
+win.flip()
 
 trigger_kwargs["byte"] = ttl_dict[f"{stream}_begin_experiment"]
 send_trigger(**trigger_kwargs)

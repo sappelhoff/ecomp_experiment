@@ -2,6 +2,7 @@
 
 import numpy as np
 
+from ecomp_experiment.define_settings import NSAMPLES
 from ecomp_experiment.define_trials import evaluate_trial_correct, gen_trials
 
 
@@ -10,7 +11,7 @@ def test_smoke():
     seed = 42
     rng = np.random.default_rng(seed)
     choices = {"single": ["lower", "higher"], "dual": ["red", "blue"]}
-    trials = gen_trials(100, 0.5, seed)
+    trials = gen_trials(100, NSAMPLES, 0.5, seed)
     for trial in trials:
         stream = rng.choice(["single", "dual"])
         choice_idx = rng.choice([0, 1, 2])

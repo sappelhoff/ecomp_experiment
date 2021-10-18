@@ -2,7 +2,7 @@
 import numpy as np
 
 
-def gen_trial(rng):
+def gen_trial(rng, nsamples):
     """Generate trials for a participant.
 
     A trial consists out of 8 samples, which are digits
@@ -15,6 +15,8 @@ def gen_trial(rng):
     rng : np.random.Generator
         The random number generator object based on which to
         generate the trials.
+    nsamples : int
+        The number of digits shown per trial.
 
     Returns
     -------
@@ -24,26 +26,25 @@ def gen_trial(rng):
     # Digits from 1 to 9
     digits = np.arange(1, 10)
 
-    # 8 samples per trial
-    n_samples = 8
-
-    # 4 samples are of color1, 4 samples are of color2
+    # 4 samples are red, 4 samples are blue
     # all drawn from uniform distribution
-    samples = rng.choice(digits, n_samples, replace=True)
-    colors = rng.choice([-1, 1] * int(n_samples / 2), n_samples, replace=False)
+    samples = rng.choice(digits, nsamples, replace=True)
+    colors = rng.choice([-1, 1] * int(nsamples / 2), nsamples, replace=False)
 
-    # Negative samples are color1, positive samples are color2
+    # Negative samples are red, positive samples are blue, see: get_digit_stims
     color_samples = samples * colors
     return color_samples
 
 
-def gen_trials(n_trials, prop_regen=0, seed=None):
+def gen_trials(n_trials, nsamples, prop_regen=0, seed=None):
     """Generate multiple trials.
 
     Parameters
     ----------
     n_trials : int
         The number of trials to generate.
+    nsamples : int
+        The number of digits shown per trial.
     prop_regen : float between 0 and 1
         The proportion of trials to regenerate. Will select the given proportion
         based on trials sorted by difficulty difference between single and dual stream.
@@ -56,18 +57,15 @@ def gen_trials(n_trials, prop_regen=0, seed=None):
 
     Returns
     -------
-    trials : np.ndarray, shape(n_trials, 8)
-        The generated trials, with 8 samples each.
+    trials : np.ndarray, shape(n_trials, nsamples)
+        The generated trials, with nsamples samples each.
     """
     assert prop_regen >= 0 and prop_regen <= 1, "`prop_regen` must be between 0 and 1."
     rng = np.random.default_rng(seed)
 
-    # 8 samples per trial
-    n_samples = 8
-
-    trials = np.nan * np.zeros((n_trials, n_samples))
+    trials = np.nan * np.zeros((n_trials, nsamples))
     for itrial in range(n_trials):
-        trials[itrial, ...] = gen_trial(rng)
+        trials[itrial, ...] = gen_trial(rng, nsamples)
 
     # Re-generate a proportion of trials where difficulty difference
     # between single and dual stream tasks is highest
@@ -77,7 +75,7 @@ def gen_trials(n_trials, prop_regen=0, seed=None):
     idxs_regen = idxs_descending[0:n_regen]
 
     for idx in idxs_regen:
-        trials[idx, ...] = gen_trial(rng)
+        trials[idx, ...] = gen_trial(rng, nsamples)
 
     return trials
 
@@ -87,7 +85,7 @@ def calc_trial_difficulty_diffs(trials):
 
     Parameters
     ----------
-    trials : np.ndarray, shape(n_trials, 8)
+    trials : np.ndarray, shape(n_trials, nsamples)
         The trials to calculate difficulty differences for.
 
     Returns
@@ -148,9 +146,11 @@ def evaluate_trial_correct(trial, choice, stream):
         choice = {"single": "lower", "dual": "red"}[stream]  # arbitrary
 
     digits = np.abs(trial)
+
+    # correct True/False is determined randomly for ambiguous trials
+    ambiguous = True
     rng = np.random.default_rng()
     correct = rng.choice([True, False])
-    ambiguous = True
 
     if stream == "single":
         assert choice in ["lower", "higher"]

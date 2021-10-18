@@ -106,32 +106,28 @@ def get_choice_stims(win, stream, state, height=1):
     return choice_stims
 
 
-def get_digit_stims(win, color1=(1, -1, -1), color2=(-1, -1, 1), height=1):
+def get_digit_stims(win, height=1):
     """Pre-generate all digit stimuli.
 
     Parameters
     ----------
     win : psychopy.visual.Window
         The psychopy window on which to draw the stimuli.
-    color1 : tuple
-        The first color that the stimuli may have.
-    color2 : tuple
-        The second color that the stimuli may have.
     height : int | float
         height of the stimuli in degrees visual angle.
 
     Returns
     -------
     digit_stims : dict of psychopy.visual.text.TextStim
-        Contains keys 1 to 9 and negative 1 to negative 9. Corresponding
-        to digits in color1 and color2, respectively.
+        Contains keys -1 to -9 and 1 to 9. Corresponding
+        to digits in red and blue color, respectively.
 
     """
     digits = [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     digit_stims = dict()
     for digit in digits:
-        color = color1 if digit < 0 else color2
+        color = (1, -1, -1) if digit < 0 else (-1, -1, 1)
         stim = visual.TextStim(
             win,
             height=height,
