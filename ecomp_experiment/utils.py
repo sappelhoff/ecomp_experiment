@@ -41,13 +41,6 @@ def calc_accuracy(logfile, blocksize):
     return acc_overall, acc_block
 
 
-def set_fixstim_color(stim, color):
-    """Set the fill and line color of a stim."""
-    stim.setFillColor(color)
-    stim.setLineColor(color)
-    return stim
-
-
 def check_framerate(win, expected_fps):
     """Get and check fps of this window."""
     fps_counter = 0
