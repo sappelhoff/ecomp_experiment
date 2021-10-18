@@ -80,7 +80,7 @@ def get_choice_stims(win, stream, state, height=1):
 
     center_width_pix = center.boundingBox[0]
     center_width_deg = tools.monitorunittools.pix2deg(center_width_pix, win.monitor)
-    dist = (center_width_deg / 2) * 1.1
+    dist = (center_width_deg / 2) * 1.2
 
     left = visual.TextStim(
         **kwargs,

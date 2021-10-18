@@ -95,7 +95,7 @@ assert error == 0
 ttl_dict = get_ttl_dict()
 
 if SER_ADDRESS is None:
-    ser_port = FakeSerial()
+    ser_port = MySerial(FakeSerial(), waitsecs=SER_WAITSECS)
     print("No serial port specified. We will not send TTL triggers to EEG.")
 else:
     ser_port = MySerial(SER_ADDRESS, waitsecs=SER_WAITSECS)
