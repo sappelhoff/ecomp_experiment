@@ -55,7 +55,7 @@ my_monitor = monitors.Monitor(name=MONITOR_NAME)
 # Prepare eyetracking (only track eyes in "experiment" mode)
 month_day_hour_minute = datetime.datetime.today().strftime("%m%d%H%M")
 edf_fname = f"{month_day_hour_minute}.edf"
-tk_dummy_mode = TK_DUMMY_MODE if run_type == "experiment" else False
+tk_dummy_mode = TK_DUMMY_MODE if run_type == "experiment" else True
 tk = setup_eyetracker(tk_dummy_mode, my_monitor, edf_fname, CALIBRATION_TYPE)
 
 # prepare the trials

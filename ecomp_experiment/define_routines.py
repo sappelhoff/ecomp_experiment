@@ -10,6 +10,7 @@ import numpy as np
 from psychopy import core, event, gui
 
 import ecomp_experiment
+from ecomp_experiment.define_settings import BLOCKSIZE, MAXWAIT_RESPONSE_S, NSAMPLES
 from ecomp_experiment.define_stimuli import get_central_text_stim
 from ecomp_experiment.define_ttl import send_trigger
 from ecomp_experiment.utils import calc_accuracy
@@ -25,55 +26,53 @@ def display_instructions(win, stream):
     stream : {"single", "dual"}
         The stream to run in the experiment.
     """
-    text_stim = get_central_text_stim(win, 1, "", (1, 1, 1))
+    text_stim = get_central_text_stim(win=win, height=1, text="", color=(1, 1, 1))
 
     # prepare instructions
     common_instructions_start = [
         "In this study, we want to investigate how humans average numerical values "
         "when making decisions from rapid sequential samples.",
         "At the beginning of each trial you will see a gray fixation stimulus in "
-        "the middle of the screen",
-        "After approximately XXX seconds, the trial will start and we will present "
-        "to you a rapid sequence of numbers, one after the other."
-        "Specifically, you will always see 8 numbers between 1 and 9. Half of them "
-        "are in red color, the other half of them are in blue color.",
+        "the center of the screen.",
+        "After some time, the trial will start and we will present "
+        "a rapid sequence of digits, one after the other. "
+        f"Specifically, you will always see {NSAMPLES} digits between 1 and 9. "
+        "Half of them are in red color, the other half of them are in blue color.",
     ]
     single_instructions = [
-        "We will then ask you if the average of the shown numbers is smaller "
+        "We will then ask you if the average of the numbers was smaller "
         "or larger than five.",
-        "The display will show you an upwards (larger), and a downwards (smaller) "
-        "arrow on the left and right side of the screen."
-        "You can use the left and right keys in front of you to select the upwards"
-        " or downwards arrow and to indicate whether the average of the shown "
-        "numbers is smaller or larger than five.",
+        "You will see an upwards (larger), and a downwards (smaller) "
+        "arrow on the left and right side of the screen. "
+        "Please use your left and right hand to select the arrows that indicate "
+        "whether the average of the shown numbers was smaller or larger than five.",
         "Please note that on each trial, the location of the upwards and "
-        "downwards arrow changes."
-        "In other words, you have to check on each trial which key, left or right,"
-        " means which answer, upwards arrow (larger) or downwards arrow (smaller).",
+        "downwards arrow changes. "
+        "In other words, you have to check on each trial which key, left or right, "
+        "means which answer, upwards arrow (larger) or downwards arrow (smaller).",
     ]
     dual_instructions = [
-        "We will then ask you which color had the larger average."
-        "The display will show you a blue and a red upwards arrow on the left and "
-        "right side of the screen."
-        "You can use the left and right keys in front of you to select the blue or "
-        "red upwards arrow and to indicate whether the average of the blue or of "
-        "the red numbers is larger.",
+        "We will then ask you which color had the larger average. "
+        "You will see a blue and a red upwards arrow on the left and "
+        "right side of the screen. "
+        "Please use your left and right hand to select the arrows that indicate "
+        "whether the average of the blue or of the red numbers was larger.",
         "Please note that on each trial, the location of the blue and red upwards "
-        "arrow changes."
-        "In other words, you have to check on each trial which key, left or "
-        "right, means which answer, blue or red upwards arrow.",
+        "arrow changes. "
+        "In other words, you have to check on each trial which key, left or right, "
+        "means which answer, blue or red upwards arrow.",
     ]
     common_instructions_end = [
-        "You have 3 seconds to answer. If you do not answer in time, there will be"
-        " a timeout message and your answer is counted as wrong.",
+        f"You have {MAXWAIT_RESPONSE_S} seconds to answer. "
+        "If you do not answer in time, there will be "
+        "a timeout message and your answer is counted as wrong.\n"
         "The study will then automatically proceed to the next trial after a "
         "short time.",
-        "Every XXX trials you will receive information about how accurate your "
-        "choices were.",
-        "Remember that over the whole you can earn a bonus of up to 10 Euros, "
-        "depending on your accuracy (Note that less than 60% accuracy results "
-        "in no bonus)",
-        "Press the right key to end the instructions.",
+        f"Every {BLOCKSIZE} trials you will receive information about how "
+        "accurate your choices were. "
+        "Remember that over the whole experiment you can earn a bonus of "
+        "up to 10 Euros, depending on your accuracy.\n\n"
+        "-> Pressing the right key will end the instructions. <-",
     ]
 
     if stream == "single":

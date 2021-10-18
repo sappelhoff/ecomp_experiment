@@ -5,7 +5,7 @@ monitor = "benq"  # benq, latitude7490, eizoforis
 MONITOR_NAME, EXPECTED_FPS = {
     "benq": ("benq", 144),
     "latitude7490": ("latitude7490", 60),
-    "eizoforis": ("eizoforis", 60),
+    "eizoforis": ("eizoforis", 144),
 }[monitor]
 
 
@@ -31,6 +31,7 @@ TK_DUMMY_MODE = True
 CALIBRATION_TYPE = "HV5"
 
 # Experiment settings
+NSAMPLES = 8
 NTRIALS = 2
 BLOCKSIZE = 1
 FULLSCR = False
