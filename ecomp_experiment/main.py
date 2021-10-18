@@ -22,6 +22,7 @@ from ecomp_experiment.define_settings import (
     BLOCKSIZE,
     CALIBRATION_TYPE,
     CHOICE_STIM_HEIGHT_DVA,
+    DELAY_FEEDBACK_FRAMES,
     DIGIT_FRAMES,
     DIGIT_HEIGHT_DVA,
     EXPECTED_FPS,
@@ -213,9 +214,25 @@ for itrial, trial in enumerate(trials):
     # evaluate correctness of choice
     correct, ambiguous = evaluate_trial_correct(trial, choice, stream)
 
-    # potentially send feedback (always during  training trials)
+    # delay feedback
+    for frame in range(DELAY_FEEDBACK_FRAMES):
+        win.flip()
+
+    # show feedback
     show_feedback = (run_type == "training") or SHOW_FEEDBACK
-    if show_feedback and (choice != "n/a"):
+    if choice == "n/a":
+        # timeout feedback is always shown
+        trigger_kwargs["byte"] = ttl_dict[f"{stream}_feedback_timeout"]
+        win.callOnFlip(send_trigger, **trigger_kwargs)
+        warn_stim = get_central_text_stim(
+            win, height=TEXT_HEIGHT_DVA, text="Too slow!", color=(1, -1, -1)
+        )
+        for frame in range(TIMEOUT_FRAMES):
+            warn_stim.draw()
+            win.flip()
+    elif show_feedback:
+        # training feedback is always shown
+        # to show all other feedback, set SHOW_FEEDBACK=True
         correct_str = "correct" if correct else "wrong"
         trigger_kwargs["byte"] = ttl_dict[f"{stream}_feedback_{correct_str}"]
         win.callOnFlip(send_trigger, **trigger_kwargs)
@@ -230,17 +247,6 @@ for itrial, trial in enumerate(trials):
 
         for frame in range(feedback_frames):
             feedback_stim.draw()
-            win.flip()
-
-    # send timeout warning *if choice too slow*
-    if choice == "n/a":
-        trigger_kwargs["byte"] = ttl_dict[f"{stream}_feedback_timeout"]
-        win.callOnFlip(send_trigger, **trigger_kwargs)
-        warn_stim = get_central_text_stim(
-            win, height=TEXT_HEIGHT_DVA, text="Too slow!", color=(1, -1, -1)
-        )
-        for frame in range(TIMEOUT_FRAMES):
-            warn_stim.draw()
             win.flip()
 
     # Save trial data

@@ -40,6 +40,9 @@ FEEDBACK_FRAMES = int(np.round(feedback_ms / (1000 / EXPECTED_FPS)))
 TIMEOUT_FRAMES = EXPECTED_FPS
 FIXSTIM_OFF_FRAMES = int(np.ceil(EXPECTED_FPS / 2))
 
+delay_feedback_ms = 100
+DELAY_FEEDBACK_FRAMES = int(np.round(delay_feedback_ms / (1000 / EXPECTED_FPS)))
+
 # Eye-tracker settings
 TK_DUMMY_MODE = True
 CALIBRATION_TYPE = "HV5"
