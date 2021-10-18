@@ -11,7 +11,12 @@ import numpy as np
 from psychopy import core, event, gui
 
 import ecomp_experiment
-from ecomp_experiment.define_settings import BLOCKSIZE, MAXWAIT_RESPONSE_S, NSAMPLES
+from ecomp_experiment.define_settings import (
+    BLOCKSIZE,
+    MAXWAIT_RESPONSE_S,
+    NSAMPLES,
+    TEXT_HEIGHT_DVA,
+)
 from ecomp_experiment.define_stimuli import get_central_text_stim
 from ecomp_experiment.define_ttl import send_trigger
 from ecomp_experiment.utils import calc_accuracy
@@ -27,7 +32,7 @@ def display_instructions(win, stream):
     stream : {"single", "dual"}
         The stream to run in the experiment.
     """
-    text_stim = get_central_text_stim(win=win, height=1, text="", color=(1, 1, 1))
+    text_stim = get_central_text_stim(win=win, height=TEXT_HEIGHT_DVA)
 
     # prepare instructions
     common_instructions_start = [
@@ -320,7 +325,6 @@ def display_block_break(
     do_hard_break = block_counter % hard_break == 0
     acc_overall, acc_block = calc_accuracy(logfile, blocksize)
 
-    height = 1
     color = (1, 1, 1)
     text = f"You have completed {itrial+1} of {ntrials} trials.\n\n"
     text += f"Your choices in the past {blocksize} trials "
@@ -332,7 +336,7 @@ def display_block_break(
     else:
         text += "Press any key to continue."
 
-    text_stim = get_central_text_stim(win, height, text, color)
+    text_stim = get_central_text_stim(win, TEXT_HEIGHT_DVA, text, color)
     text_stim.draw()
     win.callOnFlip(send_trigger, **trigger_kwargs)
     win.flip()

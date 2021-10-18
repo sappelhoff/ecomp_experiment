@@ -21,6 +21,7 @@ from ecomp_experiment.define_routines import (
 from ecomp_experiment.define_settings import (
     BLOCKSIZE,
     CALIBRATION_TYPE,
+    CHOICE_STIM_HEIGHT_DVA,
     DIGIT_FRAMES,
     DIGIT_HEIGHT_DVA,
     EXPECTED_FPS,
@@ -35,6 +36,7 @@ from ecomp_experiment.define_settings import (
     NTRIALS,
     SER_ADDRESS,
     SER_WAITSECS,
+    TEXT_HEIGHT_DVA,
     TIMEOUT_FRAMES,
     TK_DUMMY_MODE,
     TRAINING_FEEDBACK_FRAMES,
@@ -57,7 +59,8 @@ if streamdir is not None:
 # Prepare monitor
 my_monitor = monitors.Monitor(name=MONITOR_NAME)
 
-# Prepare eyetracking (only track eyes in "experiment" mode)
+# Prepare eyetracking
+# (only track eyes in "experiment" mode and if TK_DUMMY_MODE is False)
 month_day_hour_minute = datetime.datetime.today().strftime("%m%d%H%M")
 edf_fname = f"{month_day_hour_minute}.edf"
 tk_dummy_mode = TK_DUMMY_MODE if run_type == "experiment" else True
@@ -109,7 +112,11 @@ trigger_kwargs = dict(ser=ser_port, tk=tk, byte=bytes([0]))
 
 # Start experiment
 # ----------------
-start_stim = get_central_text_stim(win, 1, "Press any key to start.", (1, 1, 1))
+start_stim = get_central_text_stim(
+    win,
+    height=TEXT_HEIGHT_DVA,
+    text="Press any key to start.",
+)
 start_stim.draw()
 win.flip()
 event.waitKeys()
@@ -164,7 +171,9 @@ for itrial, trial in enumerate(trials):
     )
 
     # get choice from participant
-    choice_stims = get_choice_stims(win, stream=stream, state=state, height=2)
+    choice_stims = get_choice_stims(
+        win, stream=stream, state=state, height=CHOICE_STIM_HEIGHT_DVA
+    )
     for stim in choice_stims:
         stim.draw()
 
@@ -205,7 +214,7 @@ for itrial, trial in enumerate(trials):
     if (run_type == "training") and (choice != "n/a"):
         correct_str = "correct" if correct else "wrong"
         msg = f"Your choice ({choice}) was {correct_str}."
-        training_stim = get_central_text_stim(win, 1, msg, (1, 1, 1))
+        training_stim = get_central_text_stim(win, height=TEXT_HEIGHT_DVA, text=msg)
         for frame in range(TRAINING_FEEDBACK_FRAMES):
             training_stim.draw()
             win.flip()
@@ -214,7 +223,9 @@ for itrial, trial in enumerate(trials):
     if choice == "n/a":
         trigger_kwargs["byte"] = ttl_dict[f"{stream}_feedback_timeout"]
         win.callOnFlip(send_trigger, **trigger_kwargs)
-        warn_stim = get_central_text_stim(win, 1, "Too slow!", (1, -1, -1))
+        warn_stim = get_central_text_stim(
+            win, height=TEXT_HEIGHT_DVA, text="Too slow!", color=(1, -1, -1)
+        )
         for frame in range(TIMEOUT_FRAMES):
             warn_stim.draw()
             win.flip()
