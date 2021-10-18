@@ -86,6 +86,10 @@ def map_key_to_choice(key, state, stream):
     choice : {"lower", "higher", "blue", "red"}
         The choice the participant made. lower/higher relate to single stream, blue/red
         relate to dual stream.
+
+    See Also
+    --------
+    define_stimuli.get_choice_stims
     """
     if stream == "single":
         if state == 0:

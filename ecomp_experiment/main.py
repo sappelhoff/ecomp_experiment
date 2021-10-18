@@ -28,6 +28,7 @@ from ecomp_experiment.define_settings import (
     FADE_FRAMES,
     FIXSTIM_OFF_FRAMES,
     FULLSCR,
+    HARD_BREAK,
     MAX_ITI_MS,
     MAXWAIT_RESPONSE_S,
     MIN_ITI_MS,
@@ -257,7 +258,7 @@ for itrial, trial in enumerate(trials):
             NTRIALS,
             BLOCKSIZE,
             block_counter,
-            hard_break=2,
+            hard_break=HARD_BREAK,
             trigger_kwargs=trigger_kwargs,
         )
         trigger_kwargs["byte"] = ttl_dict[f"{stream}_feedback_break_end"]
