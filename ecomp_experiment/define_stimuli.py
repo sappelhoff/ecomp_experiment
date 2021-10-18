@@ -4,7 +4,7 @@ import numpy as np
 from psychopy import tools, visual
 
 
-def get_central_text_stim(win, height, text, color=(1, 1, 1)):
+def get_central_text_stim(win, height, text="", color=(1, 1, 1)):
     """Get a central text stimulus to use e.g., for the block break."""
     text_stim = visual.TextStim(
         win=win,

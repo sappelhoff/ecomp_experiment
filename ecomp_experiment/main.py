@@ -26,6 +26,7 @@ from ecomp_experiment.define_settings import (
     DIGIT_HEIGHT_DVA,
     EXPECTED_FPS,
     FADE_FRAMES,
+    FEEDBACK_FRAMES,
     FIXSTIM_OFF_FRAMES,
     FULLSCR,
     HARD_BREAK,
@@ -37,6 +38,7 @@ from ecomp_experiment.define_settings import (
     NTRIALS,
     SER_ADDRESS,
     SER_WAITSECS,
+    SHOW_FEEDBACK,
     TEXT_HEIGHT_DVA,
     TIMEOUT_FRAMES,
     TK_DUMMY_MODE,
@@ -211,13 +213,23 @@ for itrial, trial in enumerate(trials):
     # evaluate correctness of choice
     correct, ambiguous = evaluate_trial_correct(trial, choice, stream)
 
-    # send feedback *if training trials* (no TTL trigger needed in training)
-    if (run_type == "training") and (choice != "n/a"):
+    # potentially send feedback (always during  training trials)
+    show_feedback = (run_type == "training") or SHOW_FEEDBACK
+    if show_feedback and (choice != "n/a"):
         correct_str = "correct" if correct else "wrong"
-        msg = f"Your choice ({choice}) was {correct_str}."
-        training_stim = get_central_text_stim(win, height=TEXT_HEIGHT_DVA, text=msg)
-        for frame in range(TRAINING_FEEDBACK_FRAMES):
-            training_stim.draw()
+        trigger_kwargs["byte"] = ttl_dict[f"{stream}_feedback_{correct_str}"]
+        win.callOnFlip(send_trigger, **trigger_kwargs)
+        feedback_stim = get_central_text_stim(win, height=TEXT_HEIGHT_DVA)
+        if run_type == "training":
+            feedback_stim.text = f"Your choice ({choice}) was {correct_str}."
+            feedback_frames = TRAINING_FEEDBACK_FRAMES
+        else:
+            feedback_stim.text = f"{correct_str}"
+            feedback_stim.color = (-1, 1, -1) if correct else (1, -1, -1)
+            feedback_frames = FEEDBACK_FRAMES
+
+        for frame in range(feedback_frames):
+            feedback_stim.draw()
             win.flip()
 
     # send timeout warning *if choice too slow*

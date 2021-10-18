@@ -29,14 +29,14 @@ def get_ttl_dict():
     # crop the meaningful EEG data. Make sure to include some time BEFORE and
     # AFTER the triggers so that filtering does not introduce artifacts into
     # important parts.
-    ttl_dict["single_begin_experiment"] = bytes([1])
-    ttl_dict["single_end_experiment"] = bytes([2])
+    ttl_dict["single_begin_experiment"] = bytes([80])
+    ttl_dict["single_end_experiment"] = bytes([90])
 
     # New trial starts
-    ttl_dict["single_new_trl"] = bytes([3])
+    ttl_dict["single_new_trl"] = bytes([1])
 
     # first fixstim offset in trial
-    ttl_dict["single_fixstim_offset"] = bytes([4])
+    ttl_dict["single_fixstim_offset"] = bytes([2])
 
     # Show a digit (red 1-9 and blue 1-9)
     ttl_dict["single_digit_1"] = bytes([11])
@@ -60,23 +60,25 @@ def get_ttl_dict():
     ttl_dict["single_digit_-9"] = bytes([29])
 
     # prompt a response
-    ttl_dict["single_response_prompt"] = bytes([5])
+    ttl_dict["single_response_prompt"] = bytes([3])
 
     # participant took to long to respond
-    ttl_dict["single_response_timeout"] = bytes([6])
+    ttl_dict["single_response_timeout"] = bytes([30])
 
     # valid participant respones
-    ttl_dict["single_response_lower"] = bytes([30])
-    ttl_dict["single_response_higher"] = bytes([31])
-    ttl_dict["single_response_blue"] = bytes([32])
-    ttl_dict["single_response_red"] = bytes([33])
+    ttl_dict["single_response_lower"] = bytes([31])
+    ttl_dict["single_response_higher"] = bytes([32])
+    ttl_dict["single_response_blue"] = bytes([33])
+    ttl_dict["single_response_red"] = bytes([34])
 
-    # feedback: timeout warning
-    ttl_dict["single_feedback_timeout"] = bytes([7])
+    # feedback: correct/incorrect/timeout
+    ttl_dict["single_feedback_correct"] = bytes([4])
+    ttl_dict["single_feedback_wrong"] = bytes([5])
+    ttl_dict["single_feedback_timeout"] = bytes([6])
 
     # feedback: block break
-    ttl_dict["single_feedback_break_begin"] = bytes([8])
-    ttl_dict["single_feedback_break_end"] = bytes([9])
+    ttl_dict["single_feedback_break_begin"] = bytes([7])
+    ttl_dict["single_feedback_break_end"] = bytes([8])
 
     # Generate the triggers for the "dual" task
     dict_to_add = {}
