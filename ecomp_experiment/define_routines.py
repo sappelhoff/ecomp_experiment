@@ -230,8 +230,8 @@ def display_iti(win, min_ms, max_ms, fps, rng, trigger_kwargs):
     iti_ms : int
         the inter-trial-interval in milliseconds.
     """
-    low = int(np.floor(min_ms / 1000 * fps))
-    high = int(np.ceil(max_ms / 1000 * fps))
+    low = int(np.floor((min_ms / 1000) * fps))
+    high = int(np.ceil((max_ms / 1000) * fps))
     iti_frames = rng.integers(low, high + 1)
 
     win.callOnFlip(send_trigger, **trigger_kwargs)

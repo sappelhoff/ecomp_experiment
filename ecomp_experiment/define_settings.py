@@ -1,5 +1,7 @@
 """Provide constants for several settings in the experiment."""
 
+import numpy as np
+
 # pick a monitor
 monitor = "benq"  # benq, latitude7490, eizoforis
 MONITOR_NAME, EXPECTED_FPS = {
@@ -22,15 +24,23 @@ SER_WAITSECS = 0.005  # depending on sampling frequncy: at 1000Hz, must be >= 0.
 # Define stimuli lengths
 MIN_ITI_MS = 500
 MAX_ITI_MS = 1500
-DIGIT_FRAMES = int(EXPECTED_FPS / 2.75)
-FADE_FRAMES = int(EXPECTED_FPS / 12)
+
+# times we want to *show* and *fade* a digit. Try to get as close as possible, given FPS
+digit_ms = 270
+fade_ms = 80
+DIGIT_FRAMES = int(np.round(digit_ms / (1000 / EXPECTED_FPS)))
+FADE_FRAMES = int(np.round(fade_ms / (1000 / EXPECTED_FPS)))
+
 MAXWAIT_RESPONSE_S = 3
+TRAINING_FEEDBACK_FRAMES = EXPECTED_FPS * 2
+TIMEOUT_FRAMES = EXPECTED_FPS
+FIXSTIM_OFF_FRAMES = int(np.ceil(EXPECTED_FPS / 2))
 
 # Eye-tracker settings
 TK_DUMMY_MODE = True
 CALIBRATION_TYPE = "HV5"
 
-# Experiment settings
+# other settings
 DIGIT_HEIGHT_DVA = 5
 NSAMPLES = 10
 NTRIALS = 2

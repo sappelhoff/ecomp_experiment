@@ -25,6 +25,7 @@ from ecomp_experiment.define_settings import (
     DIGIT_HEIGHT_DVA,
     EXPECTED_FPS,
     FADE_FRAMES,
+    FIXSTIM_OFF_FRAMES,
     FULLSCR,
     MAX_ITI_MS,
     MAXWAIT_RESPONSE_S,
@@ -34,7 +35,9 @@ from ecomp_experiment.define_settings import (
     NTRIALS,
     SER_ADDRESS,
     SER_WAITSECS,
+    TIMEOUT_FRAMES,
     TK_DUMMY_MODE,
+    TRAINING_FEEDBACK_FRAMES,
 )
 from ecomp_experiment.define_stimuli import (
     get_central_text_stim,
@@ -143,7 +146,7 @@ for itrial, trial in enumerate(trials):
 
     trigger_kwargs["byte"] = ttl_dict[f"{stream}_fixstim_offset"]
     win.callOnFlip(send_trigger, **trigger_kwargs)
-    for frame in range(int(np.ceil(fps / 2))):
+    for frame in range(FIXSTIM_OFF_FRAMES):
         win.flip()
 
     # show samples
@@ -203,7 +206,7 @@ for itrial, trial in enumerate(trials):
         correct_str = "correct" if correct else "wrong"
         msg = f"Your choice ({choice}) was {correct_str}."
         training_stim = get_central_text_stim(win, 1, msg, (1, 1, 1))
-        for frame in range(fps * 3):
+        for frame in range(TRAINING_FEEDBACK_FRAMES):
             training_stim.draw()
             win.flip()
 
@@ -212,7 +215,7 @@ for itrial, trial in enumerate(trials):
         trigger_kwargs["byte"] = ttl_dict[f"{stream}_feedback_timeout"]
         win.callOnFlip(send_trigger, **trigger_kwargs)
         warn_stim = get_central_text_stim(win, 1, "Too slow!", (1, -1, -1))
-        for frame in range(fps):
+        for frame in range(TIMEOUT_FRAMES):
             warn_stim.draw()
             win.flip()
 
