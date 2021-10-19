@@ -204,7 +204,7 @@ def display_survey_gui():
     )
     data.update(kwargs)
 
-    fname = f"experiment_info_stream-{stream}.json"
+    fname = f"sub-{substr}_stream-{stream}_info.json"
     fpath = subjdir / fname
     if fpath.exists() and run_type == "experiment":
         raise RuntimeError(f"File exists: {fpath}")

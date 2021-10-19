@@ -1,11 +1,13 @@
 """Test the TTL trigger script for basic integrity."""
 import time
 
+from ecomp_experiment.define_eyetracking import DummyEyeLink
 from ecomp_experiment.define_ttl import (
     DUAL_STREAM_CONST,
     FakeSerial,
     MySerial,
     get_ttl_dict,
+    send_trigger,
 )
 
 
@@ -47,3 +49,10 @@ def test_serials():
 
     # Close it
     ser.ser.close()
+
+
+def test_send_trigger():
+    """Send trigger to fake eye-tracker and fake serial."""
+    ser = MySerial(FakeSerial(), 1)
+    tk = DummyEyeLink()
+    send_trigger(ser, tk, bytes([1]))

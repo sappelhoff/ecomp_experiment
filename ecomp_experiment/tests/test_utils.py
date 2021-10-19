@@ -1,12 +1,18 @@
 """Test utility functions."""
 import itertools
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
 
 from ecomp_experiment.define_settings import KEYLIST_DICT
-from ecomp_experiment.utils import map_key_to_choice, save_dict
+from ecomp_experiment.utils import (
+    calc_accuracy,
+    calc_bonus,
+    map_key_to_choice,
+    save_dict,
+)
 
 
 @pytest.mark.parametrize(
@@ -54,3 +60,17 @@ def test_save_dict(tmpdir):
     np.testing.assert_array_equal(df["a"].to_numpy(), [55, 44])
     np.testing.assert_array_equal(df["b"].to_numpy(), [22, 33])
     np.testing.assert_array_equal(df["c"].to_numpy(), [33, 22])
+
+
+def test_calc_accuracy():
+    """Test calculating the accuracy."""
+    test_data = Path(__file__).parent.resolve() / "data"
+    logfile = test_data / "samples-10_stream-single_beh.tsv"
+    acc_overall, acc_block = calc_accuracy(logfile, blocksize=5)
+    print(acc_overall, acc_block)
+
+
+def test_calc_bonus():
+    """Test calculating bonus money."""
+    with pytest.raises(ValueError, match="Supplied an integer"):
+        calc_bonus("this_subj")

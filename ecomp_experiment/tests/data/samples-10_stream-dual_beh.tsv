@@ -1,0 +1,11 @@
+trial	key	choice	ambiguous	rt	validity	iti	correct	stream	state	sample1	sample2	sample3	sample4	sample5	sample6	sample7	sample8	sample9	sample10
+0	left	blue	False	0.5961430072784424	True	1493.0555555555557	True	dual	1	-7	-4	9	3	-6	5	7	-3	6	-7
+1	left	red	False	0.8167638778686523	True	875.0	True	dual	0	1	-6	-9	4	3	-9	-3	7	2	-5
+2	right	blue	True	0.6360311508178711	True	506.9444444444444	True	dual	0	-6	4	-4	-6	6	7	-7	8	1	-3
+3	left	red	False	0.6081039905548096	True	555.5555555555555	False	dual	0	9	8	-7	-4	-1	4	3	-9	-6	9
+4	right	red	False	0.6636559963226318	True	1131.9444444444443	False	dual	1	4	3	-6	-2	-7	8	6	-3	-2	5
+5	left	blue	False	0.5758650302886963	True	1402.7777777777776	False	dual	1	-6	1	5	3	-3	-3	-6	-2	2	8
+6	right	blue	False	0.8423259258270264	True	854.1666666666666	True	dual	0	-4	-5	8	6	1	-5	6	-6	6	-1
+7	left	blue	False	0.634706974029541	True	1076.388888888889	True	dual	1	8	9	-2	4	5	-4	-7	8	-9	-6
+8	right	blue	False	0.5981600284576416	True	500.0	True	dual	0	-8	4	6	-5	3	-2	-4	-1	3	8
+9	left	red	False	0.5168149471282959	True	840.2777777777778	False	dual	0	5	-5	9	-4	-8	5	-1	-5	1	4
