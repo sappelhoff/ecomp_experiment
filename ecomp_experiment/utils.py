@@ -9,6 +9,8 @@ import numpy as np
 import pandas as pd
 from psychopy import core
 
+from ecomp_experiment.define_settings import KEYLIST_DICT
+
 
 def calc_accuracy(logfile, blocksize):
     """Calculate accuracy as percent correct choices overall and of last block.
@@ -64,8 +66,8 @@ def map_key_to_choice(key, state, stream):
 
     Parameters
     ----------
-    key : {"left", "right"}
-        The key that was pressed.
+    key : str
+        The key that was pressed, see KEYLIST_DICT in define_settings.py.
     state : {0, 1}
         One of two states of the stimuli. Used for counterbalancing on
         which side (left/right) which answer option is displayed.
@@ -83,36 +85,39 @@ def map_key_to_choice(key, state, stream):
     See Also
     --------
     define_stimuli.get_choice_stims
+    define_settings.KEYLIST_DICT
     """
+    left_key_pressed = key in KEYLIST_DICT["left"]
+    right_key_pressed = key in KEYLIST_DICT["right"]
     if stream == "single":
         if state == 0:
-            if key == "left":
+            if left_key_pressed:
                 choice = "higher"
             else:
-                assert key == "right"
+                assert right_key_pressed
                 choice = "lower"
         else:
             assert state == 1
-            if key == "left":
+            if left_key_pressed:
                 choice = "lower"
             else:
-                assert key == "right"
+                assert right_key_pressed
                 choice = "higher"
         assert choice in ["lower", "higher"]
     else:
         assert stream == "dual"
         if state == 0:
-            if key == "left":
+            if left_key_pressed:
                 choice = "red"
             else:
-                assert key == "right"
+                assert right_key_pressed
                 choice = "blue"
         else:
             assert state == 1
-            if key == "left":
+            if left_key_pressed:
                 choice = "blue"
             else:
-                assert key == "right"
+                assert right_key_pressed
                 choice = "red"
         assert choice in ["red", "blue"]
 

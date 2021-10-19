@@ -13,6 +13,7 @@ from psychopy import core, event, gui
 import ecomp_experiment
 from ecomp_experiment.define_settings import (
     BLOCKSIZE,
+    KEYLIST_DICT,
     MAXWAIT_RESPONSE_S,
     NSAMPLES,
     TEXT_HEIGHT_DVA,
@@ -93,17 +94,18 @@ def display_instructions(win, stream):
 
     # Instructions presentation
     itext = 0
+    key_list = [key for action_list in KEYLIST_DICT.values() for key in action_list]
     while True:
         text_stim.text = instructions[itext]
         text_stim.draw()
         win.flip()
-        keys = event.waitKeys(keyList=["left", "right", "escape"])
-        if keys[0] == "escape":
+        keys = event.waitKeys(keyList=key_list)
+        if keys[0] in KEYLIST_DICT["quit"]:
             break
-        elif keys[0] == "left":
+        elif keys[0] in KEYLIST_DICT["left"]:
             # can't go further back than 0
             itext = max(0, itext - 1)
-        elif keys[0] == "right":
+        elif keys[0] in KEYLIST_DICT["right"]:
             itext += 1
             if itext >= len(instructions):
                 break
@@ -311,7 +313,7 @@ def display_block_break(
         Used to determine whether to do a non-skippable block break. Done via
         ``block_counter % hard_break == 0``, that is, do a non-skippable block after
         every `hard_break` blocks. Hard breaks can only be skipped by pressing
-        the escape key.
+        the escape key (see KEYLIST_DICT in define_settings.py).
     trigger_kwargs : dict
         Contains keys ser, tk, and byte. To be passed to the send_trigger
         function.
@@ -325,7 +327,6 @@ def display_block_break(
     do_hard_break = block_counter % hard_break == 0
     acc_overall, acc_block = calc_accuracy(logfile, blocksize)
 
-    color = (1, 1, 1)
     text = f"You have completed {itrial+1} of {ntrials} trials.\n\n"
     text += f"Your choices in the past {blocksize} trials "
     text += f"were {acc_block}% accurate.\n\n"
@@ -336,13 +337,13 @@ def display_block_break(
     else:
         text += "Press any key to continue."
 
-    text_stim = get_central_text_stim(win, TEXT_HEIGHT_DVA, text, color)
+    text_stim = get_central_text_stim(win, TEXT_HEIGHT_DVA, text)
     text_stim.draw()
     win.callOnFlip(send_trigger, **trigger_kwargs)
     win.flip()
     if do_hard_break:
-        # only pressing escape works
-        event.waitKeys(keyList=["escape"])
+        # only pressing escape works (see KEYLIST_DICT in define_settings.py)
+        event.waitKeys(keyList=KEYLIST_DICT["quit"])
     else:
         event.waitKeys()
 

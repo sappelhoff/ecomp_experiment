@@ -57,3 +57,6 @@ BLOCKSIZE = 1
 HARD_BREAK = 2
 FULLSCR = False
 SHOW_FEEDBACK = True
+
+# acceptable keys to respond for actions "left", "right", and "quit"
+KEYLIST_DICT = dict(left=["left", "s"], right=["right", "d"], quit=["escape"])

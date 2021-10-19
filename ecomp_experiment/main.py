@@ -31,6 +31,7 @@ from ecomp_experiment.define_settings import (
     FIXSTIM_OFF_FRAMES,
     FULLSCR,
     HARD_BREAK,
+    KEYLIST_DICT,
     MAX_ITI_MS,
     MAXWAIT_RESPONSE_S,
     MIN_ITI_MS,
@@ -138,6 +139,7 @@ rt_clock = core.Clock()
 iti_rng = np.random.default_rng()
 state_rng = np.random.default_rng()
 block_counter = 1  # start with first block
+key_list = [key for action_list in KEYLIST_DICT.values() for key in action_list]
 for itrial, trial in enumerate(trials):
 
     # get state for this trial
@@ -187,7 +189,7 @@ for itrial, trial in enumerate(trials):
     win.flip()
     key_rt = event.waitKeys(
         maxWait=MAXWAIT_RESPONSE_S,
-        keyList=["left", "right", "escape"],
+        keyList=key_list,
         timeStamped=rt_clock,
     )
 
@@ -201,8 +203,8 @@ for itrial, trial in enumerate(trials):
     else:
         assert len(key_rt) == 1
         key = key_rt[0][0]
-        if key == "escape":
-            print("\n\nYou pressed the 'escape' key, quitting now ...")
+        if key in KEYLIST_DICT["quit"]:
+            print(f"\n\nYou pressed the '{key}' key, quitting now ...")
             win.close()
             core.quit()
         choice = map_key_to_choice(key, state, stream)

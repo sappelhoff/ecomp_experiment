@@ -1,13 +1,17 @@
 """Test utility functions."""
-
 import itertools
 
+import pytest
+
+from ecomp_experiment.define_settings import KEYLIST_DICT
 from ecomp_experiment.utils import map_key_to_choice
 
 
-def test_map_key_to_choice():
+@pytest.mark.parametrize(
+    "keys", list(itertools.product(KEYLIST_DICT["left"], KEYLIST_DICT["right"]))
+)
+def test_map_key_to_choice(keys):
     """Test mapping a key to a choice."""
-    keys = ["left", "right"]
     states = [0, 1]
     streams = ["single", "dual"]
     inputs = list(itertools.product(keys, states, streams))
@@ -20,6 +24,7 @@ def test_map_key_to_choice():
     #  ('right', 0, 'dual'),   -> blue
     #  ('right', 1, 'single'), -> higher
     #  ('right', 1, 'dual')]   -> red
+    # (note that left/right are defined in KEYLIST_DICT)
     expected_results = [
         "higher",
         "red",
