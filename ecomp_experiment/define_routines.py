@@ -130,7 +130,7 @@ def display_survey_gui():
         participant. Will be None if `run_type` is "instructions".
     stream : {"single", "dual"}
         The stream to run in the experiment.
-    substr : str
+    substr : str | None
         The subject identifier string.
     """
     # Check for real experiment or just a test run
@@ -162,7 +162,7 @@ def display_survey_gui():
             # Cancel the program in case of "cancel"
             core.quit()
     elif run_type == "instructions":
-        return run_type, None, stream
+        return run_type, None, stream, None
     else:
         assert run_type in ["training", "test"]
         survey_data2 = ["test"]
