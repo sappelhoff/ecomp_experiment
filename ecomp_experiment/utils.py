@@ -136,12 +136,12 @@ def save_dict(fname, savedict):
         The data to write.
     """
     if not fname.exists():
-        with open(fname, "w") as fout:
+        with open(fname, "w", newline="") as fout:
             writer = csv.DictWriter(fout, savedict.keys(), delimiter="\t")
             writer.writeheader()
             writer.writerow(savedict)
     else:
-        with open(fname, "a") as fout:
+        with open(fname, "a", newline="") as fout:
             writer = csv.DictWriter(fout, savedict.keys(), delimiter="\t")
             writer.writerow(savedict)
 
