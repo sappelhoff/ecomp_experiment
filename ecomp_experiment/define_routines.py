@@ -20,7 +20,7 @@ from ecomp_experiment.define_settings import (
 )
 from ecomp_experiment.define_stimuli import get_central_text_stim
 from ecomp_experiment.define_ttl import send_trigger
-from ecomp_experiment.utils import calc_accuracy
+from ecomp_experiment.utils import calc_accuracy, calc_bonus
 
 
 def display_instructions(win, stream):
@@ -118,17 +118,17 @@ def display_survey_gui():
 
     Returns
     -------
-    run_type : {"experiment", "training", "test", "instructions"}
+    run_type : {"experiment", "training", "instructions", "bonus"}
         The type/mode that the experiment runs in. "experiment" should be
-        used to run participants, "test" behaves equally, but saves data to
-        "Test" subject folders (always overwritten), and "training" should
-        only be used for training trials, because it will display additional
-        feedback. "instructions" will just display participant instructions
-        and then quit.
+        used to run participants, "training" saves data to "Test" subject
+        folders (always overwritten), shows fewer trials, and displays
+        additional feedback. "instructions" will just display participant
+        instructions and then quit. "bonus" will just display earned
+        bonus money and then quit.
     streamdir : pathlib.Path | None
         Path object pointing to the directory where to save data for this
         participant. Will be None if `run_type` is "instructions".
-    stream : {"single", "dual"}
+    stream : {"single", "dual"} | None
         The stream to run in the experiment.
     substr : str | None
         The subject identifier string.
@@ -136,10 +136,19 @@ def display_survey_gui():
     # Check for real experiment or just a test run
     survey_gui1 = gui.Dlg(title="eComp Experiment")
     survey_gui1.addField(
-        "Type", choices=["experiment", "training", "test", "instructions"]
+        "Type", choices=["experiment", "training", "instructions", "bonus"]
     )
-    survey_gui1.addField("Stream", choices=["single", "dual"])
+    survey_gui1.addField(
+        "Stream",
+        choices=["single", "dual"],
+        tip="This is irrelevant for the 'bonus' Type.",
+    )
     survey_data1 = survey_gui1.show()
+
+    # Prepare directory for saving data
+    ecomp_dir = Path("main.py").resolve().parent.parent
+    data_dir = ecomp_dir / "experiment_data"
+    assert data_dir.exists(), "Sure you are in the right directory?"
 
     if not survey_gui1.OK:
         # Cancel the program in case of "cancel"
@@ -163,14 +172,29 @@ def display_survey_gui():
             core.quit()
     elif run_type == "instructions":
         return run_type, None, stream, None
-    else:
-        assert run_type in ["training", "test"]
-        survey_data2 = ["test"]
+    elif run_type == "bonus":
+        survey_gui3 = gui.Dlg(title="eComp Experiment")
+        survey_gui3.addField("ID:", choices=list(range(1, 100)))
+        survey_data3 = survey_gui3.show()
+        if not survey_gui3.OK:
+            core.quit()
+        substr = f"sub-{survey_data3[0]:02}"
+        sub_dir = data_dir / substr
+        logfile_single = sub_dir / "single" / f"{substr}_stream-single_beh.tsv"
+        logfile_dual = sub_dir / "dual" / f"{substr}_stream-dual_beh.tsv"
+        if (not logfile_single.exists()) or (not logfile_dual.exists()):
+            raise RuntimeError(
+                f"Are you sure both single and dual logfiles exist for {substr}?"
+            )
+        bonus_euro = calc_bonus(logfile_single, logfile_dual)
+        survey_gui4 = gui.Dlg(title="eComp Experiment")
+        survey_gui4.addFixedField(label="Bonus in Euros", initial=bonus_euro)
+        survey_gui4.show()
+        return run_type, None, None, substr
 
-    # Prepare directory for saving data
-    ecomp_dir = Path("main.py").resolve().parent.parent
-    data_dir = ecomp_dir / "experiment_data"
-    assert data_dir.exists(), "Sure you are in the right directory?"
+    else:
+        assert run_type == "training"
+        survey_data2 = ["test"]
 
     # Create subj dir
     subid = survey_data2[0]
@@ -184,8 +208,8 @@ def display_survey_gui():
             msg = f"Stream directory {stream} for subject ID {substr} already exists."
             raise RuntimeError(msg)
         else:
-            assert run_type in ["training", "test"]
-            print("Found previous test/training data. Removing it ...")
+            assert run_type == "training"
+            print("Found previous training data. Removing it ...")
             shutil.rmtree(streamdir)
 
     os.makedirs(subjdir, exist_ok=True)

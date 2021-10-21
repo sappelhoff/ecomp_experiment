@@ -58,6 +58,11 @@ from ecomp_experiment.utils import check_framerate, map_key_to_choice, save_dict
 
 # Prepare logging
 run_type, streamdir, stream, substr = display_survey_gui()
+
+# *if just bonus*, display and quit.
+if run_type == "bonus":
+    core.quit()
+
 if streamdir is not None:
     logfile = streamdir / f"sub-{substr}_stream-{stream}_beh.tsv"
 
