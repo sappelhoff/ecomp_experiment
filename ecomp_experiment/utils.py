@@ -52,8 +52,8 @@ def check_framerate(win, expected_fps):
         else:
             fps_counter += 1
             print(f"Found fps: {fps}, trying again.")
-            core.wait(0.5)
-        if fps_counter > 3:
+            core.wait(1)
+        if fps_counter > 6:
             win.close()
             raise ValueError(f"Are you sure you are expecting {expected_fps} fps?")
 

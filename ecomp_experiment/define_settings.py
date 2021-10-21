@@ -52,11 +52,15 @@ DIGIT_HEIGHT_DVA = 4
 TEXT_HEIGHT_DVA = 1
 CHOICE_STIM_HEIGHT_DVA = 2
 NSAMPLES = 10
-NTRIALS = 10
-BLOCKSIZE = 5
+NTRIALS = 300
+BLOCKSIZE = 50
 HARD_BREAK = 2
 FULLSCR = False
 SHOW_FEEDBACK = True
+
+NTRIALS_TRAINING = 10
+BLOCKSIZE_TRAINING = 5
+HARD_BREAK_TRAINING = 2
 
 # acceptable keys to respond for actions "left", "right", and "quit"
 KEYLIST_DICT = dict(left=["left", "s"], right=["right", "d"], quit=["escape"])

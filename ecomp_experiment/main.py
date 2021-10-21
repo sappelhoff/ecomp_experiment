@@ -20,6 +20,7 @@ from ecomp_experiment.define_routines import (
 )
 from ecomp_experiment.define_settings import (
     BLOCKSIZE,
+    BLOCKSIZE_TRAINING,
     CALIBRATION_TYPE,
     CHOICE_STIM_HEIGHT_DVA,
     DELAY_FEEDBACK_FRAMES,
@@ -31,6 +32,7 @@ from ecomp_experiment.define_settings import (
     FIXSTIM_OFF_FRAMES,
     FULLSCR,
     HARD_BREAK,
+    HARD_BREAK_TRAINING,
     KEYLIST_DICT,
     MAX_ITI_MS,
     MAXWAIT_RESPONSE_S,
@@ -38,6 +40,7 @@ from ecomp_experiment.define_settings import (
     MONITOR_NAME,
     NSAMPLES,
     NTRIALS,
+    NTRIALS_TRAINING,
     SER_ADDRESS,
     SER_WAITSECS,
     SHOW_FEEDBACK,
@@ -63,6 +66,16 @@ run_type, streamdir, stream, substr = display_survey_gui()
 if run_type == "bonus":
     core.quit()
 
+# *if just training*, adjust trials.
+if run_type == "training":
+    ntrials = NTRIALS_TRAINING
+    blocksize = BLOCKSIZE_TRAINING
+    hard_break = HARD_BREAK_TRAINING
+else:
+    ntrials = NTRIALS
+    blocksize = BLOCKSIZE
+    hard_break = HARD_BREAK
+
 if streamdir is not None:
     logfile = streamdir / f"sub-{substr}_stream-{stream}_beh.tsv"
 
@@ -77,7 +90,7 @@ tk_dummy_mode = TK_DUMMY_MODE if run_type == "experiment" else True
 tk = setup_eyetracker(tk_dummy_mode, my_monitor, edf_fname, CALIBRATION_TYPE)
 
 # prepare the trials
-trials = gen_trials(NTRIALS, NSAMPLES)
+trials = gen_trials(ntrials, NSAMPLES)
 
 # prepare the window
 width, height = my_monitor.getSizePix()
@@ -284,16 +297,16 @@ for itrial, trial in enumerate(trials):
     save_dict(logfile, savedict)
 
     # Every nth trial, do a block break and display feedback
-    if (1 + itrial) % BLOCKSIZE == 0:
+    if (1 + itrial) % blocksize == 0:
         trigger_kwargs["byte"] = ttl_dict[f"{stream}_feedback_break_begin"]
         block_counter = display_block_break(
             win,
             logfile,
             itrial,
-            NTRIALS,
-            BLOCKSIZE,
+            ntrials,
+            blocksize,
             block_counter,
-            hard_break=HARD_BREAK,
+            hard_break=hard_break,
             trigger_kwargs=trigger_kwargs,
         )
         trigger_kwargs["byte"] = ttl_dict[f"{stream}_feedback_break_end"]
