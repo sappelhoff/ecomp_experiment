@@ -254,7 +254,7 @@ for itrial, trial in enumerate(trials):
     # Save trial data
     savedict = dict(
         trial=itrial,
-        key=key,
+        key={i: key for key, val in KEYLIST_DICT.items() for i in val}[key],
         choice=choice,
         ambiguous=ambiguous,
         rt=rt,
