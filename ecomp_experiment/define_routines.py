@@ -146,9 +146,10 @@ def display_survey_gui():
     survey_data1 = survey_gui1.show()
 
     # Prepare directory for saving data
-    ecomp_dir = Path("main.py").resolve().parent.parent
+    ecomp_dir = Path(__file__).resolve().parent.parent
     data_dir = ecomp_dir / "experiment_data"
-    assert data_dir.exists(), "Sure you are in the right directory?"
+    msg = f"Sure you are in the right directory? {ecomp_dir}, {data_dir}"
+    assert data_dir.exists(), msg
 
     if not survey_gui1.OK:
         # Cancel the program in case of "cancel"
