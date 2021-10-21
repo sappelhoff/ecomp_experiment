@@ -67,10 +67,29 @@ def test_calc_accuracy():
     test_data = Path(__file__).parent.resolve() / "data"
     logfile = test_data / "samples-10_stream-single_beh.tsv"
     acc_overall, acc_block = calc_accuracy(logfile, blocksize=5)
-    print(acc_overall, acc_block)
+    assert acc_overall == 60
+    assert acc_block == 80
+
+    acc_overall, acc_block = calc_accuracy(logfile, blocksize=1)
+    assert acc_overall == 60
+    assert acc_block == 0
+
+    test_data = Path(__file__).parent.resolve() / "data"
+    logfile = test_data / "samples-10_stream-dual_beh.tsv"
+    acc_overall, acc_block = calc_accuracy(logfile, blocksize=5)
+    assert acc_overall == 60
+    assert acc_block == 60
+
+    acc_overall, acc_block = calc_accuracy(logfile, blocksize=2)
+    assert acc_overall == 60
+    assert acc_block == 50
 
 
 def test_calc_bonus():
     """Test calculating bonus money."""
-    with pytest.raises(ValueError, match="Supplied an integer"):
-        calc_bonus("this_subj")
+    test_data = Path(__file__).parent.resolve() / "data"
+
+    logfile_single = test_data / "samples-10_stream-single_beh.tsv"
+    logfile_dual = test_data / "samples-10_stream-dual_beh.tsv"
+    bonus_euro = calc_bonus(logfile_single, logfile_dual)
+    assert bonus_euro == 2

@@ -1,9 +1,6 @@
 """Provide utility functions for the main experiment."""
 
 import csv
-import glob
-import os
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -146,39 +143,25 @@ def save_dict(fname, savedict):
             writer.writerow(savedict)
 
 
-def calc_bonus(subj_id):
+def calc_bonus(logfile_single, logfile_dual):
     """Calculate bonus money for a study participant.
 
     Bonus money is between 0 and 10 euro, based on overall % correct trials
     in single and dual stream tasks.
 
-    Function must be run from the root of the repository.
-    Run this function with (replace 'S' with the subject number):
-    python -c "from ecomp_experiment.utils import calc_bonus; calc_bonus('S')"
+    Parameters
+    ----------
+    logfile_single, logfile_dual : pathlib.Path
+        The logfiles for single and dual stream.
 
+    Returns
+    -------
+    bonus_euro : int
+        The bonus money in Euros.
     """
-    if not isinstance(subj_id, int):
-        raise ValueError("\n\n>>>>>> Supplied an integer for subj_id?")
-    cwd = os.getcwd()
-    ecomp_dir = Path(cwd).resolve()
-    assert (ecomp_dir / "experiment_data").exists(), "\n\n>>>>>> Ran from root of repo?"
-    assert (ecomp_dir / "LICENSE").exists(), "\n\n>>>>>> Ran from root of repo?"
-    data_dir = ecomp_dir / "experiment_data"
-
-    # Calculate accuracies for each stream
-    accs = []
-    for stream in ["single", "dual"]:
-        search = str(data_dir / "sub-{:02}*".format(subj_id) / stream / "data.tsv")
-        files = glob.glob(search)
-        files_str = "\n".join(files) if len(files) > 0 else "[]"
-        if len(files) != 1:
-            msg = f"Found too few or too many file candidates:\n{files_str}"
-            msg += f"\n\n(Was searching for:\n{search}\n)"
-            raise RuntimeError(msg)
-        logfile = files[0]
-        acc_overall, _ = calc_accuracy(logfile, 1)  # blocksize irrelevant
-        accs.append(acc_overall)
-    accuracy = np.mean(accs)
+    acc_overall_single, _ = calc_accuracy(logfile_single, 1)
+    acc_overall_dual, _ = calc_accuracy(logfile_dual, 1)
+    accuracy = np.mean([acc_overall_single, acc_overall_dual])
 
     # map accuracy to money
     acc = int(np.ceil(accuracy))
@@ -186,7 +169,7 @@ def calc_bonus(subj_id):
     if acc < 55:
         bonus_euro = 0
 
-    # larger than 90 = 10 € (highly unlikely to happen)
+    # larger than 90 = 10 € (unlikely to happen)
     elif acc >= 90:
         bonus_euro = 10
 
@@ -198,4 +181,5 @@ def calc_bonus(subj_id):
 
     # We round up to next euro
     bonus_euro = int(np.ceil(bonus_euro))
-    print(f"Overall correct: {accuracy}%\nBonus money: {bonus_euro}€")
+    print(f"Overall correct: {accuracy:g}%\nBonus money: {bonus_euro}€")
+    return bonus_euro

@@ -251,10 +251,14 @@ for itrial, trial in enumerate(trials):
             feedback_stim.draw()
             win.flip()
 
+    # Map pressed key to "direction" left/right
+    key2direction_map = {i: key for key, val in KEYLIST_DICT.items() for i in val}
+    direction = key2direction_map.get(key, "n/a")
+
     # Save trial data
     savedict = dict(
         trial=itrial,
-        key={i: key for key, val in KEYLIST_DICT.items() for i in val}[key],
+        direction=direction,
         choice=choice,
         ambiguous=ambiguous,
         rt=rt,
