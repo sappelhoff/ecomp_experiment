@@ -1,5 +1,7 @@
 """Provide constants for several settings in the experiment."""
 
+import os
+
 import numpy as np
 
 # pick a monitor
@@ -18,8 +20,11 @@ MONITOR_NAME, EXPECTED_FPS = {
 # search for the "TriggerBox VirtualSerial Port (COM4)"
 # in "Ports /COM & LPT)" and enter the COM port number in the constructor.
 # If there is no TriggerBox, set SER_ADDRESS to None
-SER_ADDRESS = None  # "COM4"
 SER_WAITSECS = 0.005  # depending on sampling frequncy: at 1000Hz, must be >= 0.001s
+ser_auto_determine = True  # set to False if on Win, and no Serial Port wanted
+SER_ADDRESS = None
+if ser_auto_determine and os.name == "nt":
+    SER_ADDRESS = "COM4"
 
 # Define stimuli lengths
 MIN_ITI_MS = 500
@@ -44,8 +49,12 @@ delay_feedback_ms = 100
 DELAY_FEEDBACK_FRAMES = int(np.round(delay_feedback_ms / (1000 / EXPECTED_FPS)))
 
 # Eye-tracker settings
-TK_DUMMY_MODE = True
 CALIBRATION_TYPE = "HV5"
+tk_auto_determine = True  # set to False if on Win, and no EyeLink wanted.
+TK_DUMMY_MODE = True
+if tk_auto_determine and os.name == "nt":
+    # if on Windows, use EyeLink
+    TK_DUMMY_MODE = False
 
 # other settings
 DIGIT_HEIGHT_DVA = 4
