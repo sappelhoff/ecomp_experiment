@@ -368,7 +368,12 @@ def display_block_break(
     if do_hard_break:
         # only pressing escape works (see KEYLIST_DICT in define_settings.py)
         event.waitKeys(keyList=KEYLIST_DICT["quit"])
-    else:
-        event.waitKeys()
+
+        # then, a participant can start as they want
+        text_stim.text = "Press any key to continue."
+        text_stim.draw()
+        win.flip()
+
+    event.waitKeys()
 
     return block_counter + 1

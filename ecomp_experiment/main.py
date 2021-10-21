@@ -90,6 +90,7 @@ win = visual.Window(
     winType="pyglet",
     size=(width, height),
 )
+win.mouseVisible = False
 
 fps = check_framerate(win, EXPECTED_FPS)
 
@@ -122,11 +123,17 @@ trigger_kwargs = dict(ser=ser_port, tk=tk, byte=bytes([0]))
 
 # Start experiment
 # ----------------
+key_list = [key for action_list in KEYLIST_DICT.values() for key in action_list]
 start_stim = get_central_text_stim(
     win,
     height=TEXT_HEIGHT_DVA,
-    text="Press any key to start.",
+    text="-> Please wait for the experimenter. <-",
 )
+start_stim.draw()
+win.flip()
+event.waitKeys(keyList=KEYLIST_DICT["quit"])
+
+start_stim.text = "Press any key to start."
 start_stim.draw()
 win.flip()
 event.waitKeys()
@@ -144,7 +151,6 @@ rt_clock = core.Clock()
 iti_rng = np.random.default_rng()
 state_rng = np.random.default_rng()
 block_counter = 1  # start with first block
-key_list = [key for action_list in KEYLIST_DICT.values() for key in action_list]
 for itrial, trial in enumerate(trials):
 
     # get state for this trial
@@ -249,7 +255,7 @@ for itrial, trial in enumerate(trials):
             feedback_frames = TRAINING_FEEDBACK_FRAMES
         else:
             feedback_stim.text = f"{correct_str}"
-            feedback_stim.color = (-1, 1, -1) if correct else (1, -1, -1)
+            feedback_stim.color = (-1, 1, -1) if correct else (1, 0, -1)
             feedback_frames = FEEDBACK_FRAMES
 
         for frame in range(feedback_frames):
@@ -295,7 +301,14 @@ for itrial, trial in enumerate(trials):
 
 
 # Finish experiment
-core.wait(1)
+end_stim = get_central_text_stim(
+    win,
+    height=TEXT_HEIGHT_DVA,
+    text="Done so far. Thanks for doing this task!",
+)
+end_stim.draw()
+win.flip()
+core.wait(2)
 trigger_kwargs["byte"] = ttl_dict[f"{stream}_end_experiment"]
 send_trigger(**trigger_kwargs)
 
