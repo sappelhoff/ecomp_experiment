@@ -71,5 +71,7 @@ NTRIALS_TRAINING = 10
 BLOCKSIZE_TRAINING = 5
 HARD_BREAK_TRAINING = 2
 
+SAME_TRIALS_OVER_CONDITIONS = True
+
 # acceptable keys to respond for actions "left", "right", and "quit"
 KEYLIST_DICT = dict(left=["left", "s"], right=["right", "d"], quit=["escape"])

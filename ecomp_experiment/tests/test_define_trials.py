@@ -18,6 +18,18 @@ def test_smoke():
         choice = "n/a" if choice_idx == 2 else choices[stream][choice_idx]
         correct, ambiguous = evaluate_trial_correct(trial, choice, stream)
 
+    trials1 = gen_trials(100, NSAMPLES, 0.0, seed=1)
+    trials2 = gen_trials(100, NSAMPLES, 0.0, seed=1)
+    trials3 = gen_trials(100, NSAMPLES, 0.5, seed=1)
+    trials4 = gen_trials(100, NSAMPLES, 0.0, seed=2)
+    np.testing.assert_array_equal(trials1, trials2)
+    np.testing.assert_raises(
+        AssertionError, np.testing.assert_array_equal, trials1, trials3
+    )
+    np.testing.assert_raises(
+        AssertionError, np.testing.assert_array_equal, trials1, trials4
+    )
+
 
 def test_evaluate_trial_correct():
     """Test that trials are correctly evaluated."""

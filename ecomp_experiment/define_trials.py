@@ -52,7 +52,7 @@ def gen_trials(n_trials, nsamples, prop_regen=0, seed=None):
         to help avoid trials that are very different between single and dual stream
         conditions in terms of difficulty (based on expected value difference between
         options).
-    seed : int
+    seed : int | None
         The seed for the random number generator.
 
     Returns

@@ -41,6 +41,7 @@ from ecomp_experiment.define_settings import (
     NSAMPLES,
     NTRIALS,
     NTRIALS_TRAINING,
+    SAME_TRIALS_OVER_CONDITIONS,
     SER_ADDRESS,
     SER_WAITSECS,
     SHOW_FEEDBACK,
@@ -90,7 +91,11 @@ tk_dummy_mode = TK_DUMMY_MODE if run_type == "experiment" else True
 tk = setup_eyetracker(tk_dummy_mode, my_monitor, edf_fname, CALIBRATION_TYPE)
 
 # prepare the trials
-trials = gen_trials(ntrials, NSAMPLES)
+trlgen_seed = None
+if substr != "test" and SAME_TRIALS_OVER_CONDITIONS:
+    # subjs get the same trials for single and dual
+    trlgen_seed = int(substr[4:])
+trials = gen_trials(ntrials, NSAMPLES, seed=trlgen_seed)
 
 # prepare the window
 width, height = my_monitor.getSizePix()

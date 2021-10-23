@@ -131,7 +131,7 @@ def display_survey_gui():
     stream : {"single", "dual"} | None
         The stream to run in the experiment.
     substr : str | None
-        The subject identifier string.
+        The subject identifier string, either of format "sub-00", or "test".
     """
     # Check for real experiment or just a test run
     survey_gui1 = gui.Dlg(title="eComp Experiment")
