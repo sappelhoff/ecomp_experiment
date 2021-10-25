@@ -77,25 +77,8 @@ else:
     blocksize = BLOCKSIZE
     hard_break = HARD_BREAK
 
-if streamdir is not None:
-    logfile = streamdir / f"sub-{substr}_stream-{stream}_beh.tsv"
-
 # Prepare monitor
 my_monitor = monitors.Monitor(name=MONITOR_NAME)
-
-# Prepare eyetracking
-# (only track eyes in "experiment" mode and if TK_DUMMY_MODE is False)
-month_day_hour_minute = datetime.datetime.today().strftime("%m%d%H%M")
-edf_fname = f"{month_day_hour_minute}.edf"
-tk_dummy_mode = TK_DUMMY_MODE if run_type == "experiment" else True
-tk = setup_eyetracker(tk_dummy_mode, my_monitor, edf_fname, CALIBRATION_TYPE)
-
-# prepare the trials
-trlgen_seed = None
-if substr != "test" and SAME_TRIALS_OVER_CONDITIONS:
-    # subjs get the same trials for single and dual
-    trlgen_seed = int(substr[4:])
-trials = gen_trials(ntrials, NSAMPLES, seed=trlgen_seed)
 
 # prepare the window
 width, height = my_monitor.getSizePix()
@@ -117,6 +100,24 @@ if run_type == "instructions":
     display_instructions(win, stream)
     win.close()
     core.quit()
+
+# Prepare logfile
+if streamdir is not None:
+    logfile = streamdir / f"sub-{substr}_stream-{stream}_beh.tsv"
+
+# Prepare eyetracking
+# (only track eyes in "experiment" mode and if TK_DUMMY_MODE is False)
+month_day_hour_minute = datetime.datetime.today().strftime("%m%d%H%M")
+edf_fname = f"{month_day_hour_minute}.edf"
+tk_dummy_mode = TK_DUMMY_MODE if run_type == "experiment" else True
+tk = setup_eyetracker(tk_dummy_mode, my_monitor, edf_fname, CALIBRATION_TYPE)
+
+# prepare the trials
+trlgen_seed = None
+if (substr != "test") and (substr is not None) and SAME_TRIALS_OVER_CONDITIONS:
+    # subjs get the same trials for single and dual
+    trlgen_seed = int(substr)
+trials = gen_trials(ntrials, NSAMPLES, seed=trlgen_seed)
 
 # get stimuli
 digit_stims = get_digit_stims(win, height=DIGIT_HEIGHT_DVA)

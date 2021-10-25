@@ -131,7 +131,7 @@ def display_survey_gui():
     stream : {"single", "dual"} | None
         The stream to run in the experiment.
     substr : str | None
-        The subject identifier string, either of format "sub-00", or "test".
+        The subject identifier string, either of format f"{int}:02", or "test".
     """
     # Check for real experiment or just a test run
     survey_gui1 = gui.Dlg(title="eComp Experiment")
@@ -179,13 +179,13 @@ def display_survey_gui():
         survey_data3 = survey_gui3.show()
         if not survey_gui3.OK:
             core.quit()
-        substr = f"sub-{survey_data3[0]:02}"
-        sub_dir = data_dir / substr
-        logfile_single = sub_dir / "single" / f"{substr}_stream-single_beh.tsv"
-        logfile_dual = sub_dir / "dual" / f"{substr}_stream-dual_beh.tsv"
+        substr = f"{survey_data3[0]:02}"
+        sub_dir = data_dir / f"sub-{substr}"
+        logfile_single = sub_dir / "single" / f"sub-{substr}_stream-single_beh.tsv"
+        logfile_dual = sub_dir / "dual" / f"sub-{substr}_stream-dual_beh.tsv"
         if (not logfile_single.exists()) or (not logfile_dual.exists()):
             raise RuntimeError(
-                f"Are you sure both single and dual logfiles exist for {substr}?"
+                f"Are you sure both single and dual logfiles exist for sub-{substr}?"
             )
         bonus_euro = calc_bonus(logfile_single, logfile_dual)
         survey_gui4 = gui.Dlg(title="eComp Experiment")
@@ -206,7 +206,7 @@ def display_survey_gui():
     # Do not risk overwriting experiment data
     if streamdir.exists():
         if run_type == "experiment":
-            msg = f"Stream directory {stream} for subject ID {substr} already exists."
+            msg = f"Stream directory {stream} for sub-{substr} already exists."
             raise RuntimeError(msg)
         else:
             assert run_type == "training"
