@@ -139,6 +139,7 @@ else:
     ser_port = MySerial(SER_ADDRESS, waitsecs=SER_WAITSECS)
 
 trigger_kwargs = dict(ser=ser_port, tk=tk, byte=bytes([0]))
+send_trigger(**trigger_kwargs)
 
 # Start experiment
 # ----------------

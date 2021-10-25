@@ -130,6 +130,7 @@ class MySerial:
         self.ser.write(byte)
         perf_sleep(self.waitsecs)
         self.ser.write(self.reset_val)
+        perf_sleep(self.waitsecs)
 
 
 def perf_sleep(waitsecs):
