@@ -45,7 +45,7 @@ def test_serials():
     start = time.perf_counter()
     ser.write(some_byte)
     stop = time.perf_counter()
-    assert (stop - start) >= ser_waitsecs
+    assert (stop - start) >= ser_waitsecs * 2
 
     # Close it
     ser.ser.close()

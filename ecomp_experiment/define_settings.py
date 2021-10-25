@@ -5,7 +5,7 @@ import os
 import numpy as np
 
 # pick a monitor
-monitor = "latitude"  # benq, latitude, eizoforis
+monitor = "eizoforis"  # benq, latitude, eizoforis
 MONITOR_NAME, EXPECTED_FPS = {
     "benq": ("benq", 144),
     "latitude": ("latitude", 60),
@@ -57,7 +57,7 @@ if tk_auto_determine and os.name == "nt":
     TK_DUMMY_MODE = False
 
 # other settings
-DIGIT_HEIGHT_DVA = 4
+DIGIT_HEIGHT_DVA = 3
 TEXT_HEIGHT_DVA = 1
 CHOICE_STIM_HEIGHT_DVA = 2
 NSAMPLES = 10

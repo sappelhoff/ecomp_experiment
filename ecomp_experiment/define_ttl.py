@@ -119,9 +119,7 @@ class MySerial:
         if isinstance(ser, (serial.Serial, FakeSerial)):
             self.ser = ser
         else:
-            self.ser = serial.Serial(
-                port=ser, baudrate=115200, bytesize=serial.EIGHTBITS
-            )
+            self.ser = serial.Serial(port=ser)
         self.waitsecs = waitsecs
         self.reset_val = bytes([0])
 
