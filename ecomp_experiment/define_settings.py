@@ -5,10 +5,10 @@ import os
 import numpy as np
 
 # pick a monitor
-monitor = "benq"  # benq, latitude7490, eizoforis
+monitor = "latitude"  # benq, latitude, eizoforis
 MONITOR_NAME, EXPECTED_FPS = {
     "benq": ("benq", 144),
-    "latitude7490": ("latitude7490", 60),
+    "latitude": ("latitude", 60),
     "eizoforis": ("eizoforis", 144),
 }[monitor]
 

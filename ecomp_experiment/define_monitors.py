@@ -9,7 +9,7 @@ if __name__ == "__main__":
     # -------------------
 
     # Dell Latitude 7490 monitor (personal laptop)
-    my_monitor = monitors.Monitor(name="latitude7490")
+    my_monitor = monitors.Monitor(name="latitude")
     my_monitor.setSizePix((1920, 1080))
     my_monitor.setWidth(30)
     my_monitor.setDistance(50)
