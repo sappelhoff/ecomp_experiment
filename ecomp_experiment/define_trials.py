@@ -5,10 +5,10 @@ import numpy as np
 def gen_trial(rng, nsamples):
     """Generate trials for a participant.
 
-    A trial consists out of 8 samples, which are digits
-    between 1 and 9 that are of two colors - here indicated
-    by the sign (negative or positive). Each trial contains
-    exactly 4 samples of each color.
+    A trial consists out of `nsamples` samples, which are
+    digits between 1 and 9 that are of two colors - here
+    indicated by the sign (negative or positive). Each trial
+    contains exactly ``nsamples/2`` samples of each color.
 
     Parameters
     ----------
@@ -20,13 +20,13 @@ def gen_trial(rng, nsamples):
 
     Returns
     -------
-    color_samples : np.ndarray, shape(8,)
+    color_samples : np.ndarray, shape(nsamples,)
         Samples for this trial.
     """
     # Digits from 1 to 9
     digits = np.arange(1, 10)
 
-    # 4 samples are red, 4 samples are blue
+    # Half of samples are red, other half of samples are blue
     # all drawn from uniform distribution
     samples = rng.choice(digits, nsamples, replace=True)
     colors = rng.choice([-1, 1] * int(nsamples / 2), nsamples, replace=False)
