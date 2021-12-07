@@ -38,7 +38,7 @@ def get_ttl_dict():
     # first fixstim offset in trial
     ttl_dict["single_fixstim_offset"] = bytes([2])
 
-    # Show a digit (red 1-9 and blue 1-9)
+    # Show a digit (positive: blue 1-9; negative: red 1-9)
     ttl_dict["single_digit_1"] = bytes([11])
     ttl_dict["single_digit_2"] = bytes([12])
     ttl_dict["single_digit_3"] = bytes([13])

@@ -283,8 +283,9 @@ def display_trial(
     ----------
     win : psychopy.visual.Window
         The psychopy window on which to draw the stimuli.
-    trial : np.ndarray, shape(8,)
-        The digit samples in this trial (from 1 to 9).
+    trial : np.ndarray, shape(n_samples,)
+        The digit samples in this trial (from 1 to 9; positive and negative;
+        negative=red, positive=blue).
     digit_frames, fade_frames : int
         The number of frames (win flips) to show a digit, and to fade a digit.
     digit_stims : dict
