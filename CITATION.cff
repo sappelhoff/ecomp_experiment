@@ -1,0 +1,52 @@
+# YAML 1.2
+---
+# Metadata for citation of this software according to the CFF format (https://citation-file-format.github.io/)
+#
+# To do:
+# Update "preferred-citation" with preprint and eventual publication (status, type, doi, ...)
+#    - https://github.com/citation-file-format/citation-file-format/blob/main/schema-guide.md#definitionsreferencestatus
+#    - https://github.com/citation-file-format/citation-file-format/blob/main/schema-guide.md#definitionsreferencetype
+#    - https://github.com/citation-file-format/citation-file-format/blob/main/schema-guide.md#definitionsreferencedoi
+#
+#
+# After storing on Zenodo, add:
+# identifiers:
+#   - description: "Code archive on Zenodo"
+#     type: doi
+#     value: xx.xxxx/zenodo.xxxxxx
+#
+cff-version: 1.2.0
+title: eComp Experiment Code
+authors:
+  - given-names: Stefan
+    family-names: Appelhoff
+    affiliation: Max Planck Institute for Human Development
+    orcid: 'https://orcid.org/0000-0001-8002-0877'
+type: software
+repository-code: 'https://github.com/sappelhoff/ecomp_experiment/'
+license: MIT
+keywords:
+  - experiment
+  - neuroscience
+  - psychology
+  - eeg
+message: >-
+  Please cite this software using the metadata from
+  'preferred-citation'.
+preferred-citation:
+  authors:
+    - given-names: Stefan
+      family-names: Appelhoff
+      orcid: 'https://orcid.org/0000-0001-8002-0877'
+    - given-names: Ralph
+      family-names: Hertwig
+      orcid: 'https://orcid.org/0000-0002-9908-9556'
+    - given-names: Bernhard
+      family-names: Spitzer
+      orcid: 'https://orcid.org/0000-0001-9752-932X'
+  title: >-
+    EEG-representational geometries of psychometric distortions in approximate numerical judgment
+  status: in-preparation
+  year: 2022
+  type: article
+...
