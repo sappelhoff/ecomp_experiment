@@ -7,6 +7,10 @@
 
 This Python package implements the eComp experiment.
 
+The archived version can be found on Zenodo:
+
+- doi: forthcoming
+
 ## Installation
 
 1. Download [miniconda](https://docs.conda.io/en/latest/miniconda.html)
@@ -43,3 +47,27 @@ will most likely be `2021.1`.
 The experiment is intended to be run with simultaneous recording of EEG and eye-tracking data.
 
 For more information on this, please see the `EEG` and `eye-tracking` directories respectively.
+
+## Further resources
+
+All important details are reported in the original paper for the project:
+
+- preprint: forthcoming
+- journal article: forthcoming
+
+The analysis code is available:
+
+- repository: https://github.com/sappelhoff/ecomp_analysis
+- doi: forthcoming
+
+The data is available in several formats:
+
+- sourcedata
+    - repository: https://gin.g-node.org/sappelhoff/mpib_ecomp_sourcedata
+    - doi: forthcoming
+- derivatives
+    - repository: https://gin.g-node.org/sappelhoff/mpib_ecomp_derivatives
+    - doi: forthcoming
+- BIDS formatted
+    - repository: https://gin.g-node.org/sappelhoff/mpib_ecomp_dataset
+    - doi: forthcoming
