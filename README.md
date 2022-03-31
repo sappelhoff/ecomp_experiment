@@ -2,6 +2,7 @@
 [![Python style](https://github.com/sappelhoff/ecomp_experiment/actions/workflows/style.yml/badge.svg)](https://github.com/sappelhoff/ecomp_experiment/actions/workflows/style.yml)
 [![Python test](https://github.com/sappelhoff/ecomp_experiment/actions/workflows/test.yml/badge.svg)](https://github.com/sappelhoff/ecomp_experiment/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/sappelhoff/ecomp_experiment/branch/main/graph/badge.svg?token=TC2BCYGJAJ)](https://codecov.io/gh/sappelhoff/ecomp_experiment)
+[![DOI](https://zenodo.org/badge/406799654.svg)](https://zenodo.org/badge/latestdoi/406799654)
 
 # eComp Experiment
 
