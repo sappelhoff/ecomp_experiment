@@ -10,7 +10,7 @@ This Python package implements the eComp experiment.
 
 The archived version can be found on Zenodo:
 
-- doi: forthcoming
+- doi: [10.5281/zenodo.6411313](https://doi.org/10.5281/zenodo.6411313)
 
 ## Installation
 

@@ -1,13 +1,6 @@
 # YAML 1.2
 ---
 # Metadata for citation of this software according to the CFF format (https://citation-file-format.github.io/)
-#
-# After storing on Zenodo, add:
-# identifiers:
-#   - description: "Code archive on Zenodo"
-#     type: doi
-#     value: xx.xxxx/zenodo.xxxxxx
-#
 cff-version: 1.2.0
 title: eComp Experiment Code
 authors:
@@ -25,7 +18,7 @@ keywords:
   - eeg
 message: >-
   Please cite this software using the metadata from
-  'preferred-citation'.
+  'preferred-citation' in the CITATION.cff file.
 preferred-citation:
   authors:
     - given-names: Stefan
@@ -43,4 +36,8 @@ preferred-citation:
   status: preprint
   year: 2022
   type: article
+identifiers:
+  - description: "Code archive on Zenodo"
+    type: doi
+    value: 10.5281/zenodo.6411313
 ...
