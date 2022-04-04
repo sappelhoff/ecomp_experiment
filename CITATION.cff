@@ -2,13 +2,6 @@
 ---
 # Metadata for citation of this software according to the CFF format (https://citation-file-format.github.io/)
 #
-# To do:
-# Update "preferred-citation" with preprint and eventual publication (status, type, doi, ...)
-#    - https://github.com/citation-file-format/citation-file-format/blob/main/schema-guide.md#definitionsreferencestatus
-#    - https://github.com/citation-file-format/citation-file-format/blob/main/schema-guide.md#definitionsreferencetype
-#    - https://github.com/citation-file-format/citation-file-format/blob/main/schema-guide.md#definitionsreferencedoi
-#
-#
 # After storing on Zenodo, add:
 # identifiers:
 #   - description: "Code archive on Zenodo"
@@ -45,8 +38,9 @@ preferred-citation:
       family-names: Spitzer
       orcid: 'https://orcid.org/0000-0001-9752-932X'
   title: >-
-    EEG-representational geometries of psychometric distortions in approximate numerical judgment
-  status: in-preparation
+    EEG-representational geometries and psychometric distortions in approximate numerical judgment
+  doi: 10.1101/2022.03.31.486560
+  status: preprint
   year: 2022
   type: article
 ...
