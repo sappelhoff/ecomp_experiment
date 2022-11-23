@@ -54,7 +54,7 @@ For more information on this, please see the `EEG` and `eye-tracking` directorie
 All important details are reported in the original paper for the project:
 
 - preprint: [10.1101/2022.03.31.486560](https://doi.org/10.1101/2022.03.31.486560)
-- journal article: forthcoming
+- journal article: forthcoming in PLOS Computational Biology
 
 The analysis code is available:
 
@@ -65,10 +65,10 @@ The data is available in several formats:
 
 - sourcedata
     - repository: https://gin.g-node.org/sappelhoff/mpib_ecomp_sourcedata
-    - doi: forthcoming
+    - doi: [10.12751/g-node.lir3qw](https://doi.org/10.12751/g-node.lir3qw)
 - derivatives
     - repository: https://gin.g-node.org/sappelhoff/mpib_ecomp_derivatives
-    - doi: forthcoming
+    - doi: [10.12751/g-node.9rtg6f](https://doi.org/10.12751/g-node.9rtg6f)
 - BIDS formatted
     - repository: https://gin.g-node.org/sappelhoff/mpib_ecomp_dataset
-    - doi: forthcoming
+    - doi: [10.12751/g-node.jtfg5d](https://doi.org/10.12751/g-node.jtfg5d)
