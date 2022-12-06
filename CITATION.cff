@@ -32,10 +32,13 @@ preferred-citation:
       orcid: 'https://orcid.org/0000-0001-9752-932X'
   title: >-
     EEG-representational geometries and psychometric distortions in approximate numerical judgment
-  doi: 10.1101/2022.03.31.486560
-  status: preprint
+  journal: PLOS Computational Biology
+  volume: 18
+  number: 12
+  month: 12
   year: 2022
   type: article
+  doi: 10.1371/journal.pcbi.1010747
 identifiers:
   - description: "Code archive on Zenodo"
     type: doi
